@@ -2,12 +2,12 @@
 # Script to run simulation on cluster
 # ------------------------------------------------------
 
+# Path to installed packages on cluster
+.libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
+
 here::i_am("run_analysis.R")
 
 source(here::here("simulate_data.R"))
-
-# Path to installed packages on cluster
-.libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
 
 #devtools::load_all("../shigella_projects/packages/vegrowth/")
 library(vegrowth)
