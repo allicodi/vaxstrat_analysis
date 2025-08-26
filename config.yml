@@ -1,0 +1,138 @@
+default:
+  n_sample_size:
+    - 1000
+    - 5000
+  inflation: 0
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  S_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  S_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  
+vary_inflation:
+  n_sample_size:
+    - 1000
+    - 5000
+    - 10000
+    - 25000
+    - 50000
+    - 75000
+    - 100000
+  inflation: [0, -1]
+  effect_protect: [TRUE,FALSE]
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  S_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  S_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  
+vary_epsilon:
+  n_sample_size:
+    - 1000
+    - 5000
+    - 10000
+    - 25000
+    - 50000
+    - 75000
+    - 100000
+  inflation: 0
+  nat_inf_epsilon: 
+    - 0.9
+    - 0.75
+    - 0.50
+    - 0.25
+    - 0.1
+  doomed_epsilon: 1
+  S_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  S_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  
+vary_epsilon_hudgens:
+  n_sample_size:
+    - 1000
+    - 5000
+    - 10000
+    - 25000
+    - 50000
+    - 75000
+    - 100000
+  inflation: 0
+  nat_inf_epsilon: 1
+  doomed_epsilon: 
+    - 0.9
+    - 0.75
+    - 0.50
+    - 0.25
+    - 0.1
+  S_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  S_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
