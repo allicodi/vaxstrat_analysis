@@ -6,6 +6,9 @@ here::i_am("run_analysis.R")
 
 source(here::here("simulate_data.R"))
 
+# Path to installed packages on cluster
+.libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
+
 #devtools::load_all("../shigella_projects/packages/vegrowth/")
 library(vegrowth)
 library(future)
@@ -19,14 +22,15 @@ options(echo = TRUE)
 options(future.globals.maxSize = 5 * 1024^3) # 5 GB
 options(future.globals.onReference = "ignore")
 
-# Path to installed packages on cluster
-.libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
+ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "1"))
+print(ncores)
+plan(multisession, workers = ncores)
 
-ncores <- parallelly::availableCores()
-future::plan("multicore", workers = ncores)
+# ncores <- parallelly::availableCores()
+# future::plan("multicore", workers = ncores)
 
 # Path to projects folder where results will be saved
-project_dir <- "/projects/dbenkes/allison/ve_growth_sims/results/"
+project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/"
 seed <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 setting <- Sys.getenv("SETTING")
 
@@ -46,9 +50,9 @@ grid <- expand.grid(seed = seed,
                     nat_inf_epsilon = as.numeric(config$nat_inf_epsilon),
                     doomed_epsilon = as.numeric(config$doomed_epsilon))
 
-results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, data, seed){
+results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
   
-  data <- simulate_data(seed = seed,
+  data <- simulate_data(seed = grid$seed[i],
                         effect_protect = grid$effect_protect[i],
                         inflation = grid$inflation[i],
                         nat_inf_epsilon = grid$nat_inf_epsilon[i], 
@@ -100,7 +104,8 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, data, see
 
   # save individual row too in case job fails, can splice together later
   saveRDS(results, paste0(project_dir, setting, "/",
-                          "n_", grid$n_sample_size[i],
+                          "seed_", grid$seed[i],
+                          "_n_", grid$n_sample_size[i],
                           "_inflation_", grid$inflation[i],
                           "_doomedepsilon_", grid$doomed_epsilon[i],
                           "_natinfepsilon_", grid$nat_inf_epsilon[i],
@@ -108,7 +113,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, data, see
   
   return(results_df)
 
-}, grid = grid, data = data, seed = seed, future.seed = TRUE)
+}, grid = grid, future.seed = TRUE)
 
 full_results <- do.call(rbind, results)
 

@@ -34,7 +34,6 @@ vary_inflation:
     - 10000
     - 25000
     - 50000
-    - 75000
     - 100000
   inflation: [0, -1]
   effect_protect: [TRUE,FALSE]
