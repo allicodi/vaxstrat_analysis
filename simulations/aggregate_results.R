@@ -12,8 +12,9 @@ library(readr)
 # Path to projects folder where results will be saved
 project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/"
 
-# setting to look for name
-setting <- Sys.getenv("SETTING")
+# command args config setting
+cargs <- commandArgs(trailingOnly = TRUE)
+setting <- cargs[[1]]
 
 # List all matching .rds files
 files <- list.files(
