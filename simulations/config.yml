@@ -34,7 +34,7 @@ vary_inflation:
     - 1000
     - 2000
     - 4000
-  inflation: [0, -1]
+  inflation: [0, -0.5, -1]
   effect_protect: [TRUE,FALSE]
   nat_inf_epsilon: 1
   doomed_epsilon: 1
