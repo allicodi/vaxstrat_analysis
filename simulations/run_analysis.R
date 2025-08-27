@@ -10,10 +10,11 @@ here::i_am("run_analysis.R")
 source(here::here("simulate_data.R"))
 
 #devtools::load_all("../shigella_projects/packages/vegrowth/")
-library(vegrowth)
-library(future)
+
+#library(future)
 library(future.apply)
 library(SuperLearner)
+library(vegrowth)
 
 # For initial debugging scratch file
 options(echo = TRUE)
@@ -51,6 +52,8 @@ grid <- expand.grid(seed = seed,
                     doomed_epsilon = as.numeric(config$doomed_epsilon))
 
 results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
+  
+  library(SuperLearner)
   
   data <- simulate_data(seed = grid$seed[i],
                         effect_protect = grid$effect_protect[i],
