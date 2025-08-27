@@ -1,5 +1,6 @@
 real_data_analysis/provide_data
 real_data_analysis/results
 simulations/sim_data
+simulations/results
 .Rhistory
 .DS_Store
