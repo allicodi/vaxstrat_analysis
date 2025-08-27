@@ -15,11 +15,12 @@ project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/"
 # command args config setting
 cargs <- commandArgs(trailingOnly = TRUE)
 setting <- cargs[[1]]
+setting_dir <- file.path(project_dir, setting)
 
-# List all matching .rds files
+# List all matching .Rds files
 files <- list.files(
-  path = project_dir,
-  pattern = paste0("^", setting, "_overall_seed_.*\\.rds$"),
+  path = setting_dir,
+  pattern = paste0("^", setting, "_overall_seed_.*\\.Rds$"),
   full.names = TRUE
 )
 
