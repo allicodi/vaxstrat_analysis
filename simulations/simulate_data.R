@@ -8,7 +8,7 @@
 # epsilon <- 1          # where epsilon <= 1 ; if epsilon not 1, violates our assumption
 # n <- 1e5              # Sample size to simulate
 
-simulate_data <- function(seed = 12345,
+simulate_data_provide <- function(seed = 12345,
                           effect_protect = TRUE,
                           inflation = 0,
                           doomed_epsilon = 1,
@@ -178,6 +178,127 @@ simulate_data <- function(seed = 12345,
   
 }
 
+
+# Function to simulate generic data 
+simulate_data_generic <- function(seed = 12345,
+                                  effect_protect = TRUE,
+                                  inflation = 0,
+                                  doomed_epsilon = 1,
+                                  nat_inf_epsilon = 1,
+                                  n = 1e5){
+  set.seed(seed)
+  data <- data.frame(id = 1:n)
+  
+  # Covariates -----------------------------------------------------------------
+  
+  # make all binary or categorical
+  
+  # X1 - Binomial(3, 0.25)
+  # X2 - Bernoulli(0.25)
+  # X3 - Bernoulli(0.75)
+  
+  data$X1 <- rbinom(n, 3, 0.25)
+  data$X2 <- rbinom(n, 1, 0.25)
+  data$X3 <- rbinom(n, 1, 0.75)
+  
+  # Principal Strata ------------------------------------------------------------
+  
+  data$p_doomed__x <- plogis(-1 + 0.25*data$X1 - 0.4*data$X2 - 0.2*data$X3)
+  data$p_immune__x <- plogis(-0.5 + -0.5*data$X1 + 0.25*data$X2 + 0.2*data$X3)
+  data$p_protected__x <- 1 - data$p_doomed__x - data$p_immune__x
+  
+  # Sample the strata
+  probs <- cbind(data$p_doomed__x, data$p_immune__x, data$p_protected__x)
+  strata <- c("Doomed", "Immune", "Protected")
+  data$stratum <- apply(probs, 1, function(p) sample(strata, size = 1, prob = p))
+  
+  round(prop.table(table(data$stratum)), 3)
+  # Doomed    Immune Protected 
+  # 0.242     0.343     0.415 
+  
+  # Outcome Probabilities --------------------------------------------------------
+  
+  # P(Y(1) = 1 | Doomed) does not have to be equal - controls size of estimand - increase this increases estimate
+  
+  # P(Y(0) = 1 | Doomed) = P(Y(1) = 1 | Doomed) = P(Y(0) = 1 | Protect) 
+  # big ish 
+  # Y ~ X | V = 1, S = 1
+  
+  # if negative, protective effect in the doomed
+  # inflation <- 0
+  # doomed_epsilon <- 1
+  
+  # violate hudgens:
+  # P(Y(0) = 1 | Doomed)
+  data$p_Y0__doomed <-  plogis(-1 +
+                               0.25 * data$X1 +
+                               -2 * data$X2 +
+                               0.5 * data$X3)
+  
+  # P(Y(0) = 1 | Protect)
+  data$p_Y0__protect <- data$p_Y0__doomed * doomed_epsilon
+  
+  # P(Y(1) = 1 | Doomed)
+  data$p_Y1__doomed <- plogis(qlogis(data$p_Y0__doomed) + inflation)
+  
+  # P(Y(0) = 1 | Immune) does not have to be equal & doesn't matter for size of ours or hudgens
+  # equal implies no effect of intervention in the immune & should be true logically
+  
+  # P(Y(0) = 1 | Immune) = P(Y(1) = 1 | Immune) = P(Y(1) = 1 | Protect) 
+  # Y ~ X | V = 0, S = 0
+  
+  # flag to make protected effect = 0
+  if(effect_protect){
+    data$p_Y01__immune <- plogis(1 +
+                                 0.1 * data$X1 +
+                                 -1 * data$X2 +
+                                 0.25 * data$X3)
+  } else{
+    # set probability in immune = to probability of protected without abx
+    data$p_Y01__immune <- data$p_Y0__protect
+  }
+  
+  data$p_Y1__protect <- data$p_Y01__immune * nat_inf_epsilon
+  
+  # Vaccine (Z) & Infection (S) & Outcome (Y) ----------------------------------------
+  
+  # P(Z | X) ~ Bernoulli(plogis(X1 + X2 + X3))
+  # This keeps it ~50% (IQR 0.465,0.5275); min = 0.44, max = 0.67
+  p_Z__X <- plogis(-0.14 + 0.25*data$X1 + 0.1*data$X2 -0.1*data$X3)
+  
+  data$Z <- rbinom(n, 1, p_Z__X )
+  data$S <- NA
+  data$Y <- NA
+  
+  # Doomed, Z = 1:
+  is_doomed_z1 <- data$stratum == "Doomed" & data$Z == 1
+  data$S[is_doomed_z1] <- 1
+  data$Y[is_doomed_z1] <- rbinom(sum(is_doomed_z1), 1, data$p_Y1__doomed[is_doomed_z1])
+  
+  # Doomed, Z = 0:
+  is_doomed_z0 <- data$stratum == "Doomed" & data$Z == 0
+  data$S[is_doomed_z0] <- 1
+  data$Y[is_doomed_z0] <- rbinom(sum(is_doomed_z0), 1, data$p_Y0__doomed[is_doomed_z0])
+  
+  # Immune: 
+  is_immune <- data$stratum == "Immune"
+  data$S[is_immune] <- 0
+  data$Y[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y01__immune[is_immune])
+  
+  # Protected, Z=1:
+  is_protected_z1 <- data$stratum == "Protected" & data$Z == 1
+  data$S[is_protected_z1] <- 0
+  data$Y[is_protected_z1] <- rbinom(sum(is_protected_z1), 1, data$p_Y1__protect[is_protected_z1])
+  
+  # Protected, Z=0: 
+  is_protected_z0 <- data$stratum == "Protected" & data$Z == 0
+  data$S[is_protected_z0] <- 1 
+  data$Y[is_protected_z0] <- rbinom(sum(is_protected_z0), 1, data$p_Y0__protect[is_protected_z0])
+  
+  return(data)
+   
+}
+
 # sims for different sample size, epsilons, inflation
 # flexible models -- earth, gam, stepwise interaction, ... 
 
@@ -193,36 +314,36 @@ simulate_data <- function(seed = 12345,
 # P(abx) = 0.74
 # P(abx | vax = 1) = 0.73
 # P(abx | vax = 0) = 0.74
-# P(abx | rotaepi = 1) = 0.91
-# P(abx | rotaepi = 1 & vax = 1) = 0.96
+# P(abx | S = 1) = 0.91
+# P(abx | S = 1 & vax = 1) = 0.96
 
 # Sim data:
 # P(abx) = 0.73
 # P(abx | vax = 1) = 0.70
 # P(abx | vax = 0) = 0.77
-# P(abx | rotaepi = 1) = 0.94
-# P(abx | rotaepi = 1 & vax = 1) = 0.942
+# P(abx | S = 1) = 0.94
+# P(abx | S = 1 & vax = 1) = 0.942
 
 # P(Y(1) = 1 | Protected) == P(Y(1) = 1 | Immune)
-# mean(data$any_abx_wk52[data$stratum == "Protected" & data$rotaarm == 1])
+# mean(data$any_abx_wk52[data$stratum == "Protected" & data$Z == 1])
 # [1] 0.6705603
-# > mean(data$any_abx_wk52[data$stratum == "Immune" & data$rotaarm == 1])
+# > mean(data$any_abx_wk52[data$stratum == "Immune" & data$Z == 1])
 # [1] 0.6492297
 
-# mean(data$wk52_haz[data$stratum == "Protected" & data$rotaarm == 1])
+# mean(data$wk52_haz[data$stratum == "Protected" & data$Z == 1])
 # -1.544
-# mean(data$wk52_haz[data$stratum == "Immune" & data$rotaarm == 1])
+# mean(data$wk52_haz[data$stratum == "Immune" & data$Z == 1])
 # -1.5001
 
 # P(Y(0) = 1 | Protected) == P(Y(0) = 1 | Doomed)
-# > mean(data$any_abx_wk52[data$stratum == "Protected" & data$rotaarm == 0])
+# > mean(data$any_abx_wk52[data$stratum == "Protected" & data$Z == 0])
 # [1] 0.9388416
-# > mean(data$any_abx_wk52[data$stratum == "Doomed" & data$rotaarm == 0])
+# > mean(data$any_abx_wk52[data$stratum == "Doomed" & data$Z == 0])
 # [1] 0.9413367
 
-# mean(data$wk52_haz[data$stratum == "Protected" & data$rotaarm == 0])
+# mean(data$wk52_haz[data$stratum == "Protected" & data$Z == 0])
 # -1.60
-# mean(data$wk52_haz[data$stratum == "Doomed" & data$rotaarm == 0])
+# mean(data$wk52_haz[data$stratum == "Doomed" & data$Z == 0])
 # -1.47
 
 
@@ -239,34 +360,34 @@ simulate_data <- function(seed = 12345,
 # )
 # 
 # naturally infected estimands
-# # E[Y(1) | Protected or Doomed] = E[Y(1) | rotaarm = 1, Protected or Doomed]
-# # E[ any_abx_wk52 | rotaarm = 1, Protected or Doomed ]
+# # E[Y(1) | Protected or Doomed] = E[Y(1) | Z = 1, Protected or Doomed]
+# # E[ any_abx_wk52 | Z = 1, Protected or Doomed ]
 # mean(data$any_abx_wk52[
-#   data$rotaarm == 1 & 
+#   data$Z == 1 & 
 #   data$stratum %in% c("Protected", "Doomed")
 # ])
 # 
 # mean(data$any_abx_wk52[
-#   data$rotaarm == 0 & 
+#   data$Z == 0 & 
 #     data$stratum %in% c("Protected", "Doomed")
 # ])
 # 
 # # hudgens estimands
 # mean(data$any_abx_wk52[
-#   data$rotaarm == 1 & 
+#   data$Z == 1 & 
 #     data$stratum %in% c("Doomed")
 # ])
 # 
 # mean(data$any_abx_wk52[
-#   data$rotaarm == 0 & 
+#   data$Z == 0 & 
 #     data$stratum %in% c("Doomed")
 # ])
 # 
 # # population estimands
 # mean(data$any_abx_wk52[
-#   data$rotaarm == 1
+#   data$Z == 1
 # ])
 # 
 # mean(data$any_abx_wk52[
-#   data$rotaarm == 0
+#   data$Z == 0
 # ])

@@ -5,11 +5,11 @@
 # Path to installed packages on cluster
 .libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
 
-here::i_am("run_analysis.R")
+here::i_am("run_analysis_provide.R")
 
 source(here::here("simulate_data.R"))
 
-#devtools::load_all("../shigella_projects/packages/vegrowth/")
+#devtools::load_all("../../shigella_projects/packages/vegrowth/")
 
 #library(future)
 library(future.apply)
@@ -36,7 +36,7 @@ seed <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 setting <- Sys.getenv("SETTING")
 
 # read in config file
-config <- config::get(file = here::here("config.yml"), config = setting)
+config <- config::get(file = here::here("config_provide.yml"), config = setting)
 
 # Create dir to save results if does not exist
 if (!file.exists(paste0(project_dir, setting))) {
@@ -55,7 +55,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
   
   library(SuperLearner)
   
-  data <- simulate_data(seed = grid$seed[i],
+  data <- simulate_data_provide(seed = grid$seed[i],
                         effect_protect = grid$effect_protect[i],
                         inflation = grid$inflation[i],
                         nat_inf_epsilon = grid$nat_inf_epsilon[i], 

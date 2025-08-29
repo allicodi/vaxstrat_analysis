@@ -1,0 +1,144 @@
+default:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ X1 * X2 * X3"
+  Y_X_S0: "Y ~ X1 * X2 * X3"
+  S_X: "S ~ X1 * X2 * X3"
+  S_Z_X: NULL
+  Z_X: "Z ~ X1 * X2 * X3"
+  
+violate_nat_inf:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: [1, 0.75, 0.5, 0.25, 0.1, 0.01]
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ X1 * X2 * X3"
+  Y_X_S0: "Y ~ X1 * X2 * X3"
+  S_X: "S ~ X1 * X2 * X3"
+  S_Z_X: NULL
+  Z_X: "Z ~ X1 * X2 * X3"
+  
+misspecify_outcome:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ 1"
+  Y_X_S0: "Y ~ 1"
+  S_X: "S ~ X1 * X2 * X3"
+  S_Z_X: NULL
+  Z_X: "Z ~ X1 * X2 * X3"
+  
+misspecify_infection:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ X1 * X2 * X3"
+  Y_X_S0: "Y ~ X1 * X2 * X3"
+  S_X: "S ~ 1"
+  S_Z_X: NULL
+  Z_X: "Z ~ X1 * X2 * X3"
+  
+misspecify_vaccine:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ X1 * X2 * X3"
+  Y_X_S0: "Y ~ X1 * X2 * X3"
+  S_X: "S ~ X1 * X2 * X3"
+  S_Z_X: NULL
+  Z_X: "Z ~ 1"
+  
+misspecify_outcome_infection:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ X1 * X2 * X3"
+  Y_X_S1: "Y ~ 1"
+  Y_X_S0: "Y ~ 1"
+  S_X: "S ~ 1"
+  S_Z_X: NULL
+  Z_X: "Z ~ X1 * X2 * X3"
+  
+misspecify_outcome_vaccine:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ 1"
+  Y_X_S0: "Y ~ 1"
+  S_X: "S ~ X1 * X2 * X3"
+  S_Z_X: NULL
+  Z_X: "Z ~ 1"
+  
+misspecify_infection_vaccine:
+  n_sample_size:
+    - 250
+    - 500
+    - 1000
+    - 2000
+    - 4000
+  inflation: 0.1
+  effect_protect: TRUE
+  nat_inf_epsilon: 1
+  doomed_epsilon: 1
+  Y_Z_X: "Y ~ Z * X1 * X2 * X3"
+  Y_X_S1: "Y ~ X1 * X2 * X3"
+  Y_X_S0: "Y ~ X1 * X2 * X3"
+  S_X: "S ~ 1"
+  S_Z_X: NULL
+  Z_X: "Z ~ 1"
+  

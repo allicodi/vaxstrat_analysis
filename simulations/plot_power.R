@@ -110,3 +110,18 @@ ggplot(results_grid, aes(x = n, y = nat_inf_power * 100, color = "Naturally Infe
     axis.title = element_text(size = 12),
     plot.title = element_text(size = 14, face = "bold")
   )
+# ^ only show protected > doomed and add one for protected
+
+# contour plot
+# fix sample size
+# settings w combinations of doomed and protected effect sizes
+# throw out combos where doomed > protected
+# plot power
+# contours are the size of the effect in the naturally effected 
+# shade regions/add contours/outline or something where there's 80% power
+
+# repeat w same axes, contours are the size in the population estimand
+# repeat for doomed
+
+# fourth panel - where there's 80% power, overlay all on single panel
+
