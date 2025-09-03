@@ -15,7 +15,7 @@ export PATH=/apps/R/4.4.0/bin:/usr/local/bin:/usr/bin:/usr/local/sbin
 
 # use all of david's nodes for now, leave one core free per node
 
-sbatch --array=1-$NSEEDS \
+sbatch --array=79,81,140,142,149,153,197,230,392,399,441,470,496,566,615,622,623,714,743,776,802,840,904,963,977 \
   --partition=$PARTITION \
   --nodes=1 \
   --ntasks-per-node=1 \

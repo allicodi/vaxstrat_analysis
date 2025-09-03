@@ -19,9 +19,9 @@ sbatch --array=1-$NSEEDS \
   --partition=$PARTITION \
   --nodes=1 \
   --ntasks-per-node=1 \
-  --cpus-per-task=5 \
+  --cpus-per-task=3 \
   --mem-per-cpu=6G \
   --job-name=vegrowth_sim \
   --output=/projects/dbenkes/allison/vegrowth_analysis/scratch/${SETTING}_%A_%a.out \
   --export=SETTING=$SETTING,NSEEDS=$NSEEDS \
-  --wrap "/apps/R/4.4.0/bin/Rscript run_analysis_generic.R"
+  --wrap "/apps/R/4.4.0/bin/Rscript run_analysis_contour.R"

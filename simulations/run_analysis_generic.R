@@ -102,4 +102,4 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
 
 # full_results <- do.call(rbind, results)
 
-saveRDS(full_results, paste0(project_dir, setting, "/", setting, "_overall_seed_", seed, ".Rds"))
+saveRDS(results, paste0(project_dir, setting, "/", setting, "_overall_seed_", seed, ".Rds"))
