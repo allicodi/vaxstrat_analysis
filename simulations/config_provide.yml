@@ -28,7 +28,7 @@ default:
     - "SL.gam"
     - "SL.step.forward"
   
-vary_doomed_inflation:
+vary_inflation:
   n_sample_size:
     - 250
     - 500
@@ -61,21 +61,14 @@ vary_doomed_inflation:
     - "SL.gam"
     - "SL.step.forward"
   
-vary_epsilon:
+  
+contour_plot:
   n_sample_size:
-    - 250
-    - 500
-    - 1000
-    - 2000
-    - 4000
-  doomed_inflation: 0
-  protected_inflation: 0
-  protected_epsilon: 
-    - 0.9
-    - 0.75
-    - 0.50
-    - 0.25
-    - 0.1
+    - 700
+  doomed_inflation: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]
+  protected_inflation: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]
+  effect_protect: TRUE
+  protected_epsilon: 1
   doomed_epsilon: 1
   S_X_library:
     - "SL.glm"
@@ -98,39 +91,4 @@ vary_epsilon:
     - "SL.gam"
     - "SL.step.forward"
   
-vary_epsilon_hudgens:
-  n_sample_size:
-    - 250
-    - 500
-    - 1000
-    - 2000
-    - 4000
-  doomed_inflation: 0
-  protected_inflation: 0
-  protected_epsilon: 1
-  doomed_epsilon: 
-    - 0.9
-    - 0.75
-    - 0.50
-    - 0.25
-    - 0.1
-  S_X_library:
-    - "SL.glm"
-    - "SL.earth"
-    - "SL.gam"
-    - "SL.step.forward"
-  S_Z_X_library:
-    - "SL.glm"
-    - "SL.earth"
-    - "SL.gam"
-    - "SL.step.forward"
-  Y_X_library:
-    - "SL.glm"
-    - "SL.earth"
-    - "SL.gam"
-    - "SL.step.forward"
-  Y_Z_X_library:
-    - "SL.glm"
-    - "SL.earth"
-    - "SL.gam"
-    - "SL.step.forward"
+

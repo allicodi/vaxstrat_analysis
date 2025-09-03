@@ -36,21 +36,21 @@ config <- cfg[[setting]]
 grid <- expand.grid(seed = 12345,
                     effect_protect = config$effect_protect,
                     doomed_inflation = as.numeric(config$doomed_inflation),
-                    nat_inf_inflation = as.numeric(config$nat_inf_inflation),
+                    protected_inflation = as.numeric(config$protected_inflation),
                     doomed_epsilon = as.numeric(config$doomed_epsilon),
-                    nat_inf_epsilon = as.numeric(config$nat_inf_epsilon))
+                    protected_epsilon = as.numeric(config$protected_epsilon))
 
 # eliminate combos where inflation in doomed > inflation in nat_inf
-grid <- subset(grid, doomed_inflation <= nat_inf_inflation)
+grid <- subset(grid, doomed_inflation <= protected_inflation)
 
 results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
   big_data <- simulate_data_contour(seed = grid$seed[i],
                                     effect_protect = grid$effect_protect[i],
                                     doomed_inflation = grid$doomed_inflation[i],
-                                    nat_inf_inflation = grid$nat_inf_inflation[i],
-                                    nat_inf_epsilon = grid$nat_inf_epsilon[i], 
+                                    protected_inflation = grid$protected_inflation[i],
+                                    protected_epsilon = grid$protected_epsilon[i], 
                                     doomed_epsilon = grid$doomed_epsilon[i],
-                                    n = 1e6)
+                                    n = 5e6)
   
   truth <- cbind(grid[i,], data.frame(E_Y1__protected_or_doomed = rep(NA, 1),
                                   E_Y0__protected_or_doomed = rep(NA, 1),

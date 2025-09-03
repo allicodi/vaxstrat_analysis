@@ -7,9 +7,10 @@ here::i_am("get_truth.R")
 get_truth_provide <- function(config, n = 1e7, seed = 12345){
   
   grid <- expand.grid(effect_protect = config$effect_protect,
-                      inflation = as.numeric(config$inflation),
+                      doomed_inflation = as.numeric(config$doomed_inflation),
+                      protected_inflation = as.numeric(config$protected_inflation),
                       doomed_epsilon = as.numeric(config$doomed_epsilon),
-                      nat_inf_epsilon = as.numeric(config$nat_inf_epsilon))
+                      protected_epsilon = as.numeric(config$protected_epsilon))
   
   truth <- cbind(grid, data.frame(E_Y1__protected_or_doomed = rep(NA, nrow(grid)),
                                   E_Y0__protected_or_doomed = rep(NA, nrow(grid)),
@@ -28,8 +29,9 @@ get_truth_provide <- function(config, n = 1e7, seed = 12345){
   for(i in 1:nrow(grid)){
     big_data <- simulate_data_provide(seed = seed,
                               effect_protect = grid$effect_protect[i],
-                              inflation = grid$inflation[i],
-                              nat_inf_epsilon = grid$nat_inf_epsilon[i], 
+                              protected_inflation = grid$protected_inflation[i],
+                              doomed_inflation = grid$doomed_inflation[i],
+                              protected_epsilon = grid$protected_epsilon[i], 
                               doomed_epsilon = grid$doomed_epsilon[i],
                               n = n)
     
@@ -96,7 +98,7 @@ get_truth_generic <- function(config, n = 1e7, seed = 12345){
   
   grid <- expand.grid(effect_protect = config$effect_protect,
                       inflation = as.numeric(config$inflation),
-                      nat_inf_epsilon = as.numeric(config$nat_inf_epsilon),
+                      protected_epsilon = as.numeric(config$protected_epsilon),
                       doomed_epsilon = as.numeric(config$doomed_epsilon))
   
   truth <- cbind(grid, data.frame(E_Y1__protected_or_doomed = rep(NA, nrow(grid)),
@@ -123,7 +125,7 @@ get_truth_generic <- function(config, n = 1e7, seed = 12345){
     big_data <- simulate_data_generic(seed = seed,
                                       effect_protect = grid$effect_protect[i],
                                       inflation = grid$inflation[i],
-                                      nat_inf_epsilon = grid$nat_inf_epsilon[i], 
+                                      protected_epsilon = grid$protected_epsilon[i], 
                                       doomed_epsilon = grid$doomed_epsilon[i],
                                       n = n)
     
@@ -206,9 +208,9 @@ get_truth_contour <- function(config, n = 1e7, seed = 12345){
   
   grid <- expand.grid(effect_protect = config$effect_protect,
                       doomed_inflation = as.numeric(config$doomed_inflation),
-                      nat_inf_inflation = as.numeric(config$nat_inf_inflation),
+                      protected_inflation = as.numeric(config$protected_inflation),
                       doomed_epsilon = as.numeric(config$doomed_epsilon),
-                      nat_inf_epsilon = as.numeric(config$nat_inf_epsilon))
+                      protected_epsilon = as.numeric(config$protected_epsilon))
   
   truth <- cbind(grid, data.frame(E_Y1__protected_or_doomed = rep(NA, nrow(grid)),
                                   E_Y0__protected_or_doomed = rep(NA, nrow(grid)),
@@ -234,8 +236,8 @@ get_truth_contour <- function(config, n = 1e7, seed = 12345){
     big_data <- simulate_data_contour(seed = seed,
                                       effect_protect = grid$effect_protect[i],
                                       doomed_inflation = grid$doomed_inflation[i],
-                                      nat_inf_inflation = grid$nat_inf_inflation[i],
-                                      nat_inf_epsilon = grid$nat_inf_epsilon[i], 
+                                      protected_inflation = grid$protected_inflation[i],
+                                      protected_epsilon = grid$protected_epsilon[i], 
                                       doomed_epsilon = grid$doomed_epsilon[i],
                                       n = n)
     
