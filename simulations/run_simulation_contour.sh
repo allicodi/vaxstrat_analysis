@@ -15,11 +15,10 @@ export PATH=/apps/R/4.4.0/bin:/usr/local/bin:/usr/bin:/usr/local/sbin
 
 # use all of david's nodes for now, leave one core free per node
 
-sbatch --array=1-$NSEEDS \
-  --partition=$PARTITION \
+sbatch --partition=$PARTITION \
   --nodes=1 \
   --ntasks-per-node=1 \
-  --cpus-per-task=3 \
+  --cpus-per-task=10 \
   --mem-per-cpu=6G \
   --job-name=vegrowth_sim \
   --output=/projects/dbenkes/allison/vegrowth_analysis/scratch/${SETTING}_%A_%a.out \
