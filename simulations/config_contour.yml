@@ -20,8 +20,8 @@ default:
 contour_plot:
   n_sample_size:
     - 2000
-  nat_inf_inflation: [0, 0.5, 1]
-  doomed_inflation: [0, 0.5, 1]
+  nat_inf_inflation: [0, 0.25, 0.5, 0.75, 1]
+  doomed_inflation: [0, 0.25, 0.5, 0.75, 1]
   effect_protect: TRUE
   nat_inf_epsilon: 1
   doomed_epsilon: 1
