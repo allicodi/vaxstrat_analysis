@@ -51,9 +51,9 @@ grid <- expand.grid(seed = seed,
                     n_sample_size = as.numeric(config$n_sample_size),
                     effect_protect = config$effect_protect,
                     doomed_inflation = as.numeric(config$doomed_inflation),
-                    nat_inf_inflation = as.numeric(config$nat_inf_inflation),
+                    protected_inflation = as.numeric(config$protected_inflation),
                     doomed_epsilon = as.numeric(config$doomed_epsilon),
-                    nat_inf_epsilon = as.numeric(config$nat_inf_epsilon))
+                    protected_epsilon = as.numeric(config$protected_epsilon))
 
 results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
   
@@ -62,9 +62,9 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
   data <- simulate_data_provide(seed = grid$seed[i],
                         effect_protect = grid$effect_protect[i],
                         doomed_inflation = grid$doomed_inflation[i],
-                        nat_inf_inflation = grid$nat_inf_inflation[i],
+                        protected_inflation = grid$protected_inflation[i],
                         doomed_epsilon = grid$doomed_epsilon[i],
-                        nat_inf_epsilon = grid$nat_inf_epsilon[i], 
+                        protected_epsilon = grid$protected_epsilon[i], 
                         n = grid$n_sample_size[i])
 
   results <- vegrowth::vegrowth(data = data, 
@@ -118,7 +118,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
                           "_n_", grid$n_sample_size[i],
                           "_inflation_", grid$inflation[i],
                           "_doomedepsilon_", grid$doomed_epsilon[i],
-                          "_natinfepsilon_", grid$nat_inf_epsilon[i],
+                          "_natinfepsilon_", grid$protected_epsilon[i],
                           "_effectprotect_", grid$effect_protect[i], ".Rds"))
   
   return(results_df)

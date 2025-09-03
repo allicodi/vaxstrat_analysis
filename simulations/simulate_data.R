@@ -10,9 +10,10 @@
 
 simulate_data_provide <- function(seed = 12345,
                           effect_protect = TRUE,
-                          inflation = 0,
+                          doomed_inflation = 0,
+                          protected_inflation = 0,
                           doomed_epsilon = 1,
-                          nat_inf_epsilon = 1,
+                          protected_epsilon = 1,
                           n = 1e5){
   set.seed(seed)
   data <- data.frame(id = 1:n)
@@ -99,7 +100,7 @@ simulate_data_provide <- function(seed = 12345,
   # Y ~ X | V = 1, S = 1
   
   # if negative, protective effect in the doomed
-  # inflation <- 0
+  # doomed_inflation <- 0
   # doomed_epsilon <- 1
   
   # violate hudgens:
@@ -113,7 +114,7 @@ simulate_data_provide <- function(seed = 12345,
   data$p_abx_0__protect <- data$p_abx_0__doomed * doomed_epsilon
   
   # P(Y(1) = 1 | Doomed)
-  data$p_abx_1__doomed <- plogis(qlogis(data$p_abx_0__doomed) + inflation)
+  data$p_abx_1__doomed <- plogis(qlogis(data$p_abx_0__doomed) + doomed_inflation)
   
   # P(Y(0) = 1 | Immune) does not have to be equal & doesn't matter for size of ours or hudgens
   # equal implies no effect of intervention in the immune & should be true logically
@@ -137,7 +138,9 @@ simulate_data_provide <- function(seed = 12345,
     data$p_abx_01__immune <- data$p_abx_0__protect
   }
   
-  data$p_abx_1__protect <- data$p_abx_01__immune * nat_inf_epsilon
+  data$p_abx_1__protect <- data$p_abx_01__immune * protected_epsilon
+  
+  data$p_abx_1__protect <- plogis(qlogis(data$p_abx_1__protect) + protected_inflation)
   
   # Vaccine & Rotaepi ------------------------------------------------------------
   
@@ -182,9 +185,9 @@ simulate_data_provide <- function(seed = 12345,
 simulate_data_contour <- function(seed = 12345,
                                   effect_protect = TRUE,
                                   doomed_inflation = 0,
-                                  nat_inf_inflation = 0,
+                                  protected_inflation = 0,
                                   doomed_epsilon = 1,
-                                  nat_inf_epsilon = 1,
+                                  protected_epsilon = 1,
                                   n = 1e5){
   set.seed(seed)
   data <- data.frame(id = 1:n)
@@ -225,7 +228,7 @@ simulate_data_contour <- function(seed = 12345,
   # Y ~ X | V = 1, S = 1
   
   # if negative, protective effect in the doomed
-  # inflation <- 0
+  # doomed_inflation <- 0
   # doomed_epsilon <- 1
   
   # violate hudgens:
@@ -262,9 +265,9 @@ simulate_data_contour <- function(seed = 12345,
     data$p_Y01__immune <- data$p_Y0__protect
   }
   
-  data$p_Y1__protect <- data$p_Y01__immune * nat_inf_epsilon
+  data$p_Y1__protect <- data$p_Y01__immune * protected_epsilon
   
-  data$p_Y1__protect <- plogis(qlogis(data$p_Y01__immune) + nat_inf_inflation)
+  data$p_Y1__protect <- plogis(qlogis(data$p_Y01__immune) + protected_inflation)
   
   # Vaccine (Z) & Infection (S) & Outcome (Y) ----------------------------------------
   
@@ -309,9 +312,9 @@ simulate_data_contour <- function(seed = 12345,
 # Function to simulate generic data 
 simulate_data_generic <- function(seed = 12345,
                                   effect_protect = TRUE,
-                                  inflation = 0,
+                                  doomed_inflation = 0,
                                   doomed_epsilon = 1,
-                                  nat_inf_epsilon = 1,
+                                  protected_epsilon = 1,
                                   n = 1e5){
   set.seed(seed)
   data <- data.frame(id = 1:n)
@@ -352,7 +355,7 @@ simulate_data_generic <- function(seed = 12345,
   # Y ~ X | V = 1, S = 1
   
   # if negative, protective effect in the doomed
-  # inflation <- 0
+  # doomed_inflation <- 0
   # doomed_epsilon <- 1
   
   # violate hudgens:
@@ -366,7 +369,7 @@ simulate_data_generic <- function(seed = 12345,
   data$p_Y0__protect <- data$p_Y0__doomed * doomed_epsilon
   
   # P(Y(1) = 1 | Doomed)
-  data$p_Y1__doomed <- plogis(qlogis(data$p_Y0__doomed) + inflation)
+  data$p_Y1__doomed <- plogis(qlogis(data$p_Y0__doomed) + doomed_inflation)
   
   # P(Y(0) = 1 | Immune) does not have to be equal & doesn't matter for size of ours or hudgens
   # equal implies no effect of intervention in the immune & should be true logically
@@ -385,7 +388,7 @@ simulate_data_generic <- function(seed = 12345,
     data$p_Y01__immune <- data$p_Y0__protect
   }
   
-  data$p_Y1__protect <- data$p_Y01__immune * nat_inf_epsilon
+  data$p_Y1__protect <- data$p_Y01__immune * protected_epsilon
   
   # Vaccine (Z) & Infection (S) & Outcome (Y) ----------------------------------------
   
@@ -482,7 +485,7 @@ simulate_data_generic <- function(seed = 12345,
 #   seed = 12345,
 #   inflation = 0,
 #   doomed_epsilon = 1,
-#   nat_inf_epsilon = 1,
+#   protected_epsilon = 1,
 #   n = 1e6
 # )
 # 

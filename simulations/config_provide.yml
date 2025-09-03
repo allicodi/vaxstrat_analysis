@@ -2,9 +2,10 @@ default:
   n_sample_size:
     - 1000
     - 5000
-  inflation: 0
+  doomed_inflation: 0
+  protected_inflation: 0
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   S_X_library:
     - "SL.glm"
@@ -27,16 +28,17 @@ default:
     - "SL.gam"
     - "SL.step.forward"
   
-vary_inflation:
+vary_doomed_inflation:
   n_sample_size:
     - 250
     - 500
     - 1000
     - 2000
     - 4000
-  inflation: [0, -0.5, -1]
+  doomed_inflation: [0, -0.5, -1]
+  protected_inflation: 0
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   S_X_library:
     - "SL.glm"
@@ -66,8 +68,9 @@ vary_epsilon:
     - 1000
     - 2000
     - 4000
-  inflation: 0
-  nat_inf_epsilon: 
+  doomed_inflation: 0
+  protected_inflation: 0
+  protected_epsilon: 
     - 0.9
     - 0.75
     - 0.50
@@ -102,8 +105,9 @@ vary_epsilon_hudgens:
     - 1000
     - 2000
     - 4000
-  inflation: 0
-  nat_inf_epsilon: 1
+  doomed_inflation: 0
+  protected_inflation: 0
+  protected_epsilon: 1
   doomed_epsilon: 
     - 0.9
     - 0.75
