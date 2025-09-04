@@ -15,7 +15,8 @@ export PATH=/apps/R/4.4.0/bin:/usr/local/bin:/usr/bin:/usr/local/sbin
 
 # use all of david's nodes for now, leave one core free per node
 
-sbatch --partition=$PARTITION \
+sbatch --array=1-$NSEEDS \
+  --partition=$PARTITION \
   --nodes=1 \
   --ntasks-per-node=1 \
   --cpus-per-task=10 \
