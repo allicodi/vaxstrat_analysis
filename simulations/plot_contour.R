@@ -11,190 +11,176 @@ here::i_am("plot_contour.R")
 
 library(plotly)
 library(RColorBrewer)
-
 cfg <- yaml::read_yaml("config_contour.yml")
-config <- cfg[["provide_contour_plot"]]
 
-truth <- readRDS(here::here("results/contour/provide_contour_plot_truth.Rds"))
+setting_names <- c("provide_contour_plot", 
+                   "provide_contour_plot_more_immune",
+                   "provide_contour_plot_more_immune_higher_VE")
 
-# Plot contours and effect sizes from truth code ------------------------------
+setting_annotations <- c("Protected: 26%\nDoomed: 15%\nImmune: 59%\nVE: 63%",
+                         "Protected: 13%\nDoomed: 8%\nImmune: 79%\nVE: 62%",
+                         "Protected: 19%\nDoomed: 3%\nImmune: 78%\nVE: 86%")
 
-#x <- sort(unique(truth$protected_inflation))
-#y <- sort(unique(truth$doomed_inflation))
+all_rows <- list()
 
-x <- sort(unique(truth$effect_protected))
-y <- sort(unique(truth$effect_doomed))
+# To compute global min/max for shared color scale
+all_truth <- lapply(setting_names, function(setting) {
+  readRDS(here::here(paste0("results/contour/", setting, "_truth.Rds")))
+})
+global_range <- range(unlist(lapply(all_truth, function(truth) {
+  c(truth$effect_nat_inf, truth$effect_doomed, truth$effect_pop)
+})))
+levels_global <- pretty(global_range, n = 40)
+contour_size <- diff(levels_global)[1]
+zmin <- min(levels_global)
+zmax <- max(levels_global)
 
-z_nat_inf <- matrix(truth$effect_nat_inf, nrow = length(x), ncol = length(y))
-z_doomed <- matrix(truth$effect_doomed, nrow = length(x), ncol = length(y))
-z_pop <- matrix(truth$effect_pop, nrow = length(x), ncol = length(y))
+my_colorscale <- "YlGnBu"
 
-# Define exact contour levels
-levels <- pretty(c(truth$effect_nat_inf, truth$effect_doomed, truth$effect_pop), n = 25)
-zmin <- min(levels)
-zmax <- max(levels)
-contour_size <- diff(levels)[1]
-
-# Choose a colorscale and opacity
-my_colorscale <- "YlGnBu"  # can replace with "Plasma", "Cividis", or diverging palettes
-my_opacity <- 0.8
-
-# Helper function for a single contour plot with trace name
-make_contour <- function(z_matrix, trace_name, show_colorbar = TRUE) {
+make_contour <- function(x, y, z_matrix, trace_name) {
   plot_ly(
-    x = rev(x),
-    y = rev(y),
-    z = z_matrix,
+    x = rev(x), y = rev(y), z = z_matrix,
     type = "contour",
-    name = trace_name,  # set trace name,
-    colorscale = my_colorscale,
-    opacity = my_opacity,
+    zmin = zmin, zmax = zmax,
+    coloraxis = "coloraxis",  # <- use shared coloraxis
     contours = list(
-      start = levels[1],
-      end = levels[length(levels)],
+      start = levels_global[1],
+      end = levels_global[length(levels_global)],
       size = contour_size,
       showlabels = TRUE,
       labelfont = list(size = 14)
     ),
-    line = list(width = 2, color= 'black'),
-    showscale = show_colorbar,
+    line = list(width = 2, color = 'black'),
+    name = trace_name,
+    showscale = FALSE  # turn off per-trace colorbars
   ) %>%
     layout(
       xaxis = list(title = "Protected effect", autorange = "reversed"),
       yaxis = list(title = "Doomed effect", autorange = "reversed")
-    ) %>%
-    colorbar(title = "Effect\nsize")  %>%
-    add_annotations(
-      text = trace_name,
-      x = 0.5,
-      y = 1.025,
-      yref = "paper",
-      xref = "paper",
-      xanchor = "center",
-      yanchor = "top",
-      showarrow = FALSE,
-      font = list(size = 20)
+    )
+}
+
+show_legend <- TRUE
+
+# Loop over settings
+for (row_idx in seq_along(setting_names)) {
+  setting <- setting_names[row_idx]
+  
+  truth <- all_truth[[row_idx]]
+  x <- sort(unique(truth$effect_protected))
+  y <- sort(unique(truth$effect_doomed))
+  
+  z_nat_inf <- matrix(truth$effect_nat_inf, nrow = length(x), ncol = length(y))
+  z_doomed  <- matrix(truth$effect_doomed, nrow = length(x), ncol = length(y))
+  z_pop     <- matrix(truth$effect_pop, nrow = length(x), ncol = length(y))
+  
+  # Load simulation results
+  sim_res <- readRDS(here::here(paste0("results/contour/", setting, "_combined_contour_data.Rds")))
+  combos <- expand.grid(doomed_inflation = unique(sim_res$doomed_inflation),
+                        protected_inflation = unique(sim_res$protected_inflation))
+  combos$effect_protected <- truth$effect_protected[match(
+    paste(truth$doomed_inflation, truth$protected_inflation),
+    paste(combos$doomed_inflation, combos$protected_inflation)
+  )]
+  combos$effect_doomed <- truth$effect_doomed[match(
+    paste(truth$doomed_inflation, truth$protected_inflation),
+    paste(combos$doomed_inflation, combos$protected_inflation)
+  )]
+  
+  # Compute power
+  combos$doomed_power <- NA
+  combos$pop_power <- NA
+  combos$nat_inf_power <- NA
+  for (i in seq_len(nrow(combos))) {
+    sub <- sim_res[sim_res$doomed_inflation == combos$doomed_inflation[i] &
+                     sim_res$protected_inflation == combos$protected_inflation[i], ]
+    combos$doomed_power[i] <- mean(as.numeric(sub$doomed_reject))
+    combos$pop_power[i]    <- mean(as.numeric(sub$pop_reject))
+    combos$nat_inf_power[i]<- mean(as.numeric(sub$nat_inf_reject))
+  }
+  
+  get_hull <- function(df, xcol, ycol) {
+    if (nrow(df) < 3) return(df[0, ])
+    hull_idx <- chull(df[[xcol]], df[[ycol]])
+    hull_idx <- c(hull_idx, hull_idx[1])
+    df[hull_idx, ]
+  }
+  
+  p_thresh <- 0.8
+  hull_doomed   <- get_hull(subset(combos, doomed_power >= p_thresh), "effect_protected", "effect_doomed")
+  hull_pop      <- get_hull(subset(combos, pop_power >= p_thresh), "effect_protected", "effect_doomed")
+  hull_nat_inf  <- get_hull(subset(combos, nat_inf_power >= p_thresh), "effect_protected", "effect_doomed")
+  
+  fig1 <- make_contour(x, y, z_doomed, "Doomed") %>%
+    add_trace(data = hull_doomed, x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines", 
+              line = list(color = "#ED0000FF", width = 5),
+              name = "Doomed power ≥80% (n=700)", 
+              legendgroup = "power", 
+              showlegend = show_legend)
+  
+  fig2 <- make_contour(x, y, z_pop, "Population") %>%
+    add_trace(data = hull_pop, x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines", 
+              line = list(color = "#00468BFF", width = 5),
+              name = "Population power ≥80% (n=700)", 
+              legendgroup = "power", 
+              showlegend = show_legend)
+  
+  fig3 <- make_contour(x, y, z_nat_inf, "Naturally infected") %>%
+    add_trace(data = hull_nat_inf, x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines", 
+              line = list(color = "#42B540FF", width = 5),
+              name = "Naturally infected power ≥80% (n=700)", 
+              legendgroup = "power", 
+              showlegend = show_legend)
+  
+  row_fig <- subplot(fig1, fig2, fig3, nrows = 1,
+                     shareX = TRUE, shareY = TRUE,
+                     titleX = TRUE, titleY = TRUE) %>%
+    layout(
+      margin = list(l = 250)  # increase left margin to give space for annotations
     )
   
-}
-
-# Create individual plots with trace names
-
-# fig1 <- make_contour(z_doomed, trace_name = "Doomed", show_colorbar = FALSE)
-# fig2 <- make_contour(z_pop, trace_name = "Population", show_colorbar = FALSE)
-# fig3 <- make_contour(z_nat_inf, trace_name = "Naturally infected", show_colorbar = TRUE)
-# 
-# # Combine subplots
-# fig <- subplot(fig1, fig2, fig3,
-#                nrows = 1,
-#                shareX = TRUE, shareY = TRUE,
-#                titleX = TRUE, titleY = TRUE) %>%
-#   layout(
-#     # Shared color scale
-#     coloraxis = list(cmin = zmin, cmax = zmax)
-#   ) %>%
-#   colorbar(title = "Effect size")
-# 
-# fig
-
-
-# Overlay power from AIPW at sample size n = 700 ------------------------------
-
-sim_res <- readRDS(here::here("results/contour/combined_provide_contour_plot.Rds"))
-
-combos <- expand.grid(doomed_inflation = unique(sim_res$doomed_inflation),
-                      protected_inflation = unique(sim_res$protected_inflation))
-
-combos$effect_protected <- truth$effect_protected[truth$doomed_inflation == combos$doomed_inflation &
-                                                    truth$protected_inflation == combos$protected_inflation]
-combos$effect_doomed <- truth$effect_doomed[truth$doomed_inflation == combos$doomed_inflation &
-                                                    truth$protected_inflation == combos$protected_inflation]
-
-combos$doomed_power <- NA
-combos$pop_power <- NA
-combos$nat_inf_power <- NA
-
-for(i in 1:nrow(combos)){
-  sub <- sim_res[sim_res$doomed_inflation == combos$doomed_inflation[i] &
-                   sim_res$protected_inflation == combos$protected_inflation[i],]
+  # store with row label
+  all_rows[[row_idx]] <- row_fig %>%
+    layout(annotations = list(
+      list(
+        text = setting_annotations[row_idx],  # use the full annotation text
+        x = -0.2, y = 0.5,                   # position to the left of the row
+        xref = "paper", yref = "paper",
+        textangle = 0,
+        font = list(size = 14),
+        showarrow = FALSE,
+        xanchor = "center", yanchor = "middle"
+      )
+    ))
   
-  combos$doomed_power[i] <- mean(as.numeric(sub$doomed_reject))
-  combos$pop_power[i] <- mean(as.numeric(sub$pop_reject))
-  combos$nat_inf_power[i] <- mean(as.numeric(sub$nat_inf_reject))
+  show_legend <- FALSE
 }
 
-# Helper to extract convex hull coordinates
-get_hull <- function(df, xcol, ycol) {
-  hull_idx <- chull(df[[xcol]], df[[ycol]])
-  hull_idx <- c(hull_idx, hull_idx[1])  # close the polygon
-  df[hull_idx, ]
-}
-
-# threshold
-p_thresh <- 0.8
-
-# Get grid points where power > 0.8 for each estimand
-pts_doomed <- combos[combos$doomed_power >= p_thresh, ]
-pts_pop <- combos[combos$pop_power >= p_thresh, ]
-pts_nat_inf <- combos[combos$nat_inf_power >= p_thresh, ]
-
-# Build convex hull polygons
-hull_doomed   <- get_hull(pts_doomed, "effect_protected", "effect_doomed")
-hull_pop      <- get_hull(pts_pop, "effect_protected", "effect_doomed")
-hull_nat_inf  <- get_hull(pts_nat_inf, "effect_protected", "effect_doomed")
-
-fig1 <- make_contour(z_doomed, trace_name = "Doomed", show_colorbar = FALSE) %>%
-  add_trace(
-    data = hull_doomed,
-    x = ~effect_protected,
-    y = ~effect_doomed,
-    type = "scatter",
-    mode = "lines",
-    fill = "toself",
-    fillcolor = "rgba(255, 0, 0, 0)",   
-    line = list(color = "#ED0000FF", width = 5),
-    inherit = FALSE,
-    name = "Doomed\nPower ≥ 80%\n(n=700)",
-    showlegend = TRUE
-  )
-
-fig2 <- make_contour(z_pop, trace_name = "Population", show_colorbar = FALSE) %>%
-  add_trace(
-    data = hull_pop,
-    x = ~effect_protected,
-    y = ~effect_doomed,
-    type = "scatter",
-    mode = "lines",
-    fill = "toself",
-    fillcolor = "rgba(255, 0, 0, 0)",   
-    line = list(color = "#00468BFF", width = 5),
-    inherit = FALSE,
-    name = "Population\nPower ≥ 80%\n(n=700)",
-    showlegend = TRUE
-  )
-
-fig3 <- make_contour(z_nat_inf, trace_name = "Naturally infected", show_colorbar = TRUE) %>%
-  add_trace(
-    data = hull_nat_inf,
-    x = ~effect_protected,
-    y = ~effect_doomed,
-    type = "scatter",
-    mode = "lines",
-    fill = "toself",
-    fillcolor = "rgba(255, 0, 0, 0)",   
-    line = list(color = "#42B540FF", width = 5),
-    inherit = FALSE,
-    name = "Naturally Infected\nPower ≥ 80%\n(n=700)",
-    showlegend = TRUE
-  )
-
-# Combine them again
-fig <- subplot(fig1, fig2, fig3,
-               nrows = 1,
-               shareX = TRUE, shareY = TRUE,
-               titleX = TRUE, titleY = TRUE) %>%
+final_fig <- subplot(all_rows, nrows = length(setting_names), shareX = TRUE, shareY = TRUE) %>%
   layout(
-    coloraxis = list(cmin = zmin, cmax = zmax)
+    coloraxis = list(
+      colorscale = my_colorscale,
+      cmin = zmin,
+      cmax = zmax,
+      colorbar = list(
+        title = list(text = "Effect size", side = "top"),
+        tickfont = list(size = 14)
+      )
+    ),
+    legend = list(
+      orientation = "h",
+      x = 1.025,
+      y = 0,
+      xanchor = "left",
+      yanchor = "top",
+      font = list(size = 14),
+      bgcolor = "rgba(255,255,255,0)"
+    )
   )
 
-fig
+
+final_fig
+

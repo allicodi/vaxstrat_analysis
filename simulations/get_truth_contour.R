@@ -11,7 +11,7 @@ devtools::load_all("../../shigella_projects/packages/vegrowth/")
 library(SuperLearner)
 
 # set to "provide_contour_plot" or "generic_contour_plot"; set n large (but if too large won't run well)
-setting <- "provide_contour_plot"
+setting <- "provide_contour_plot_more_immune_higher_VE"
 n <- 1e6
 seed <- 12345
 
@@ -19,14 +19,16 @@ cfg <- yaml::read_yaml("config_contour.yml")
 config <- cfg[[setting]]
 
 # Generic or provide
-sim_type <- config$sim_type
+sim_type <- "provide"
 
 grid <- expand.grid(seed = seed,
                     effect_protect = config$effect_protect,
                     doomed_inflation = as.numeric(config$doomed_inflation),
                     protected_inflation = as.numeric(config$protected_inflation),
                     doomed_epsilon = as.numeric(config$doomed_epsilon),
-                    protected_epsilon = as.numeric(config$protected_epsilon))
+                    protected_epsilon = as.numeric(config$protected_epsilon),
+                    protected_delta = as.numeric(config$protected_delta),
+                    immune_delta = as.numeric(config$immune_delta))
 
 # eliminate combos where inflation in doomed > inflation in nat_inf (in generic version, this is always true for provide)
 if(sim_type == "generic"){
@@ -102,6 +104,8 @@ results <- lapply(1:nrow(grid), function(i, grid, sim_type, n){
                                       protected_inflation = grid$protected_inflation[i],
                                       protected_epsilon = grid$protected_epsilon[i], 
                                       doomed_epsilon = grid$doomed_epsilon[i],
+                                      protected_delta = grid$protected_delta[i],
+                                      immune_delta = grid$immune_delta[i],
                                       n = n)
     
     # Naturally infected estimand
