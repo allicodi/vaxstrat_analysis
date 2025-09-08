@@ -72,7 +72,7 @@ provide_contour_plot:
     - "SL.gam"
     - "SL.step.forward"
     
-provide_contour_plot_deltas:
+provide_contour_plot_more_immune:
   sim_type: "provide"
   n_sample_size:
     - 700
@@ -82,7 +82,39 @@ provide_contour_plot_deltas:
   protected_epsilon: 1
   doomed_epsilon: 1
   immune_delta: 1
-  protected_delta: [0, 1.1]
+  protected_delta: 0
+  S_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  S_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+  Y_Z_X_library:
+    - "SL.glm"
+    - "SL.earth"
+    - "SL.gam"
+    - "SL.step.forward"
+    
+provide_contour_plot_more_immune_higher_VE:
+  sim_type: "provide"
+  n_sample_size:
+    - 700
+  protected_inflation: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]
+  doomed_inflation: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]
+  effect_protect: TRUE
+  protected_epsilon: 1
+  doomed_epsilon: 1
+  immune_delta: 2
+  protected_delta: 1.4
   S_X_library:
     - "SL.glm"
     - "SL.earth"
