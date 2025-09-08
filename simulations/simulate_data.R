@@ -14,6 +14,8 @@ simulate_data_provide <- function(seed = 12345,
                           protected_inflation = 0,
                           doomed_epsilon = 1,
                           protected_epsilon = 1,
+                          immune_delta = 0,
+                          protected_delta = 0,
                           n = 1e5){
   set.seed(seed)
   data <- data.frame(id = 1:n)
@@ -60,18 +62,24 @@ simulate_data_provide <- function(seed = 12345,
   # ~1000 / 1e6 < 0
   # male with large HAZ
   
-  
   # chatgpt recommends softmax? to guarantee [0,1]
-  
+
   # adjusted from -2.16 to -1.2 to try to get marginal probability closer to observed
   log_odds_doomed__x <- -1.2 + 0.81*as.numeric(data$gender == "Male") +
     0.18*data$wk10_haz +
-    0.06*data$num_hh_sleep
+    0.06*data$num_hh_sleep 
   
   # adjusted from 1.29 to 1.5 to try to get marginal probability closer to observed
   log_odds_immune__x <- 1.5 - 0.30*as.numeric(data$gender == "Male") +
     0.10*data$wk10_haz -
-    0.08*data$num_hh_sleep
+    0.08*data$num_hh_sleep 
+  
+  # increase immune
+  log_odds_immune__x <- log_odds_immune__x + immune_delta
+  
+  # increase protected (by decreasing doomed and immune???)
+  log_odds_doomed__x <- log_odds_doomed__x - protected_delta
+  log_odds_immune__x <- log_odds_immune__x - protected_delta
   
   # Softmax transformation
   denom <- 1 + exp(log_odds_doomed__x) + exp(log_odds_immune__x)
@@ -90,6 +98,20 @@ simulate_data_provide <- function(seed = 12345,
   # marginally 7.3% doomed, 60.2% immune, 32.4% protected based on original models
   # tweaking intercepts --> 15% doomed, 59% immune, 26% protected 
   # close enough and maybe good to have more protected in simulation??
+  
+  #table(data$stratum) / (sum(table(data$stratum)))
+  
+  # original
+  # Doomed    Immune Protected 
+  # 0.14778   0.59388   0.25834 
+  
+  # increase immune, keep ratio (immune_delta = 1) -- roughly same ratio
+  # Doomed    Immune Protected 
+  # 0.07757   0.79235   0.13008 
+  
+  # increase immune, increase protected (to increase VE ) (immune_delta = 1, protected_delta = 1.1)
+  # Doomed    Immune Protected 
+  # 0.03038   0.83379   0.13583 
   
   # Outcome Probabilities --------------------------------------------------------
   

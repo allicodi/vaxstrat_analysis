@@ -44,7 +44,9 @@ grid <- expand.grid(seed = seed,
                     doomed_inflation = as.numeric(config$doomed_inflation),
                     protected_inflation = as.numeric(config$protected_inflation),
                     doomed_epsilon = as.numeric(config$doomed_epsilon),
-                    protected_epsilon = as.numeric(config$protected_epsilon))
+                    protected_epsilon = as.numeric(config$protected_epsilon),
+                    immune_delta = as.numeric(config$immune_delta),
+                    protected_delta = as.numeric(config$protected_delta))
 
 # eliminate combos where inflation in doomed > inflation in nat_inf (in generic version, this is always true for provide)
 if(sim_type == "generic"){
@@ -92,6 +94,8 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, sim_type,
                                       protected_inflation = grid$protected_inflation[i],
                                       protected_epsilon = grid$protected_epsilon[i], 
                                       doomed_epsilon = grid$doomed_epsilon[i],
+                                      immune_delta = grid$immune_delta[i],
+                                      protected_delta = grid$protected_delta[i],
                                       n = 700)
     
     results <- vegrowth::vegrowth(data = big_data, 
