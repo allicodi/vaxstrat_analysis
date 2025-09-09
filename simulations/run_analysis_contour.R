@@ -9,6 +9,7 @@ options(echo = TRUE)
 here::i_am("run_analysis_contour.R")
 
 source(here::here("simulate_data.R"))
+soruce(here::here("SL.wrappers.R"))
 
 #devtools::load_all("../../shigella_projects/packages/vegrowth/")
 
