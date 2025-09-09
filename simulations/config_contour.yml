@@ -15,22 +15,22 @@ default:
   protected_delta: 0
   S_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   S_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
@@ -53,22 +53,22 @@ provide_contour_plot:
   protected_delta: 0
   S_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   S_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
     
@@ -85,22 +85,22 @@ provide_contour_plot_more_immune:
   protected_delta: 0
   S_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   S_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
     
@@ -117,22 +117,22 @@ provide_contour_plot_more_immune_higher_VE:
   protected_delta: 1.4
   S_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   S_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   Y_Z_X_library:
     - "SL.glm"
-    - "SL.earth"
+    - "SL.earth.mod"
     - "SL.gam"
     - "SL.step.forward"
   
