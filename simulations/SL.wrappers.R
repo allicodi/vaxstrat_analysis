@@ -13,10 +13,12 @@ SL.earth.mod <- function (Y, X, newX, family, obsWeights, id, degree = 2, penalt
     
     # Check if all(Y) == 1 or == 0
     if(all(Y == 1)){
-      fit.earth <- list(msg = "All Y == 1")   
+      fit.earth <- list(msg = "All Y == 1") 
+      class(fit.earth) <- c("SL.earth.mod")
       pred <- predict(fit.earth, newdata = newX, type = "response")
     } else if (all(Y == 0)){
       fit.earth <- list(msg = "All Y == 0")   
+      class(fit.earth) <- c("SL.earth.mod")
       pred <- predict(fit.earth, newdata = newX, type = "response")
     } else{
       fit.earth <- earth::earth(x = X, y = Y, degree = degree, 
