@@ -13,13 +13,17 @@ library(plotly)
 library(RColorBrewer)
 cfg <- yaml::read_yaml("config_contour.yml")
 
-setting_names <- c("provide_contour_plot", 
-                   "provide_contour_plot_more_immune",
-                   "provide_contour_plot_more_immune_higher_VE")
+setting_names <- c("provide_immune_30_ve_66",
+                   "provide_immune_50_ve_66",
+                   "provide_immune_70_ve_66")#,
+                   #"provide_immune_70_ve_50",
+                   #"provide_immune_70_ve_85")
 
-setting_annotations <- c("Protected: 26%\nDoomed: 15%\nImmune: 59%\nVE: 63%",
-                         "Protected: 13%\nDoomed: 8%\nImmune: 79%\nVE: 62%",
-                         "Protected: 19%\nDoomed: 3%\nImmune: 78%\nVE: 86%")
+setting_annotations <- c("Protected: 47%\nDoomed: 23%\nImmune: 30%\nVE: 66%",
+                         "Protected: 33%\nDoomed: 17%\nImmune: 50%\nVE: 66%",
+                         "Protected: 20%\nDoomed: 10%\nImmune: 70%\nVE: 66%")#,
+                         #"Protected: 15%\nDoomed: 15%\nImmune: 70%\nVE: 50%",
+                         #"Protected: 25%\nDoomed: 5%\nImmune: 70%\nVE: 85%")
 
 all_rows <- list()
 
@@ -30,7 +34,7 @@ all_truth <- lapply(setting_names, function(setting) {
 global_range <- range(unlist(lapply(all_truth, function(truth) {
   c(truth$effect_nat_inf, truth$effect_doomed, truth$effect_pop)
 })))
-levels_global <- pretty(global_range, n = 40)
+levels_global <- pretty(global_range, n = 30)
 contour_size <- diff(levels_global)[1]
 zmin <- min(levels_global)
 zmax <- max(levels_global)

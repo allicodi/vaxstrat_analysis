@@ -1,6 +1,6 @@
 
 seed <- 1
-n <- 1e7
+n <- 1e4
 
 set.seed(seed)
 data <- data.frame(id = 1:n)
@@ -52,13 +52,18 @@ deltas <- expand.grid(
   protected_delta = seq(-2, 0, by = 0.01)
 ) 
 
+
+
+# final combos (for 30,50,70 immune)
+# deltas <- data.frame(immune_delta = c(-1.18, -0.32, 0.6, 0.18, 0.6, 1.3),
+#                      protected_delta = c(-0.13, -0.11, -0.17, 0.53, -0.17, -1.09))
+
+deltas <- expand.grid(immune_delta = seq(-2, 2, by =0.01),
+                      protected_delta = seq(-1.5, 1, by = 0.01))
+
 deltas$doomed <- NA
 deltas$immune <- NA
 deltas$protected <- NA
-
-# final combos
-deltas <- data.frame(immune_delta = c(-1.18, -0.32, 0.6, 0.18, 0.6, 1.3),
-                     protected_delta = c(-0.13, -0.11, -0.17, 0.53, -0.17, -1.09))
 
 for(i in 1:nrow(deltas)){
   
@@ -92,8 +97,13 @@ best_deltas <- function(deltas, doomed, immune, protected){
   best_deltas
 }
 
-best_deltas(deltas, doomed = 0.10, immune = 0.70, protected = 0.20)
 best_deltas(deltas, doomed = 0.23, immune = 0.30, protected = 0.47)
+best_deltas(deltas, doomed = 0.20, immune = 0.40, protected = 0.40)
 best_deltas(deltas, doomed = 0.17, immune = 0.50, protected = 0.33)
+best_deltas(deltas, doomed = 0.13, immune = 0.60, protected = 0.27)
+best_deltas(deltas, doomed = 0.10, immune = 0.70, protected = 0.20)
+best_deltas(deltas, doomed = 0.07, immune = 0.80, protected = 0.13)
+
+
 best_deltas(deltas, doomed = 0.15, immune = 0.70, protected = 0.15)
 best_deltas(deltas, doomed = 0.05, immune = 0.70, protected = 0.25)

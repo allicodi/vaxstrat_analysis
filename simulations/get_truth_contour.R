@@ -19,7 +19,7 @@ print(ncores)
 plan(multisession, workers = ncores)
 
 # set to "provide_contour_plot" or "generic_contour_plot"; set n large (but if too large won't run well)
-setting <- "provide_contour_plot"
+setting <- "provide_immune_30_ve_66"
 n <- 1e6
 seed <- 12345
 
@@ -178,4 +178,4 @@ truth$effect_doomed_mult <- truth$E_Y1__doomed / truth$E_Y0__doomed
 truth$effect_protected_mult <- truth$E_Y1__protected / truth$E_Y0__protected
 truth$effect_pop_mult <- truth$E_Y1__pop / truth$E_Y0__pop
 
-saveRDS(truth, paste0("results/contour/", setting, "_truth.Rds"))
+saveRDS(truth, paste0("results/contour/", setting, "__2_truth.Rds"))
