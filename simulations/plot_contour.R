@@ -94,7 +94,7 @@ for (row_idx in seq_along(setting_names)) {
   for (i in seq_len(nrow(combos))) {
     sub <- sim_res[sim_res$doomed_inflation == combos$doomed_inflation[i] &
                      sim_res$protected_inflation == combos$protected_inflation[i], ]
-    combos$doomed_power[i] <- mean(as.numeric(sub$doomed_reject))
+    combos$doomed_power[i] <- mean(as.numeric(sub$doomed_reject)) # NOTE some NAs for doomed reject, a handful of seeds where there are some NAs within the object for different combos of deltas, not sure why
     combos$pop_power[i]    <- mean(as.numeric(sub$pop_reject))
     combos$nat_inf_power[i]<- mean(as.numeric(sub$nat_inf_reject))
   }

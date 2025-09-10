@@ -79,8 +79,8 @@ simulate_data_provide <- function(seed = 12345,
   log_odds_immune__x <- log_odds_immune__x + immune_delta
   
   # increase protected (by decreasing doomed and immune???)
-  log_odds_doomed__x <- log_odds_doomed__x - protected_delta
-  log_odds_immune__x <- log_odds_immune__x - protected_delta
+  log_odds_doomed__x <- log_odds_doomed__x + protected_delta
+  log_odds_immune__x <- log_odds_immune__x + protected_delta
   
   # Softmax transformation
   denom <- 1 + exp(log_odds_doomed__x) + exp(log_odds_immune__x)
@@ -95,6 +95,7 @@ simulate_data_provide <- function(seed = 12345,
   strata <- c("Doomed", "Immune", "Protected")
   data$stratum <- apply(probs, 1, function(p) sample(strata, size = 1, prob = p))
   
+  #table(data$stratum) / (sum(table(data$stratum)))
   # true marginal probabilities = 17% doomed, 64% immune, 19% protected
   # marginally 7.3% doomed, 60.2% immune, 32.4% protected based on original models
   # tweaking intercepts --> 15% doomed, 59% immune, 26% protected 
