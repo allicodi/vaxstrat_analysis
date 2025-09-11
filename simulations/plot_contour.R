@@ -13,9 +13,12 @@ library(plotly)
 library(RColorBrewer)
 cfg <- yaml::read_yaml("config_contour.yml")
 
-setting_names <- c("provide_immune_30_ve_66",
-                   "provide_immune_50_ve_66",
-                   "provide_immune_70_ve_66")#,
+setting_names <- c("provide_immune_30_ve_66__2",
+                   "provide_immune_40_ve_66__2",
+                   "provide_immune_50_ve_66__2",
+                   "provide_immune_60_ve_66__2",
+                   "provide_immune_70_ve_66__2",
+                   "provide_immune_80_ve_66__2")#,
                    #"provide_immune_70_ve_50",
                    #"provide_immune_70_ve_85")
 
