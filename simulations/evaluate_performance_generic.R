@@ -160,12 +160,16 @@ for(fname in files){
           exp(res$pop$aipw$pt_est['log_multiplicative_effect'] + 1.96*res$pop$aipw$pt_est['log_multiplicative_se']))
       ),
       # Truth
-      additive_truth = c(rep(truth$effect_nat_inf, 4), truth$nat_inf_lower_bound,
-                         rep(truth$effect_doomed, 3), truth$doomed_lower_bound,
-                         rep(truth$effect_pop, 3)),
-      mult_truth = c(rep(truth$effect_nat_inf_mult, 4),truth$nat_inf_lower_bound_mult,
-                     rep(truth$effect_doomed_mult, 3),truth$doomed_lower_bound_mult,
-                     rep(truth$effect_pop_mult, 3))
+      additive_truth = c(rep(truth$effect_nat_inf[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4), 
+                         truth$nat_inf_lower_bound[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]],
+                         rep(truth$effect_doomed[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3), 
+                         truth$doomed_lower_bound[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]],
+                         rep(truth$effect_pop[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3)),
+      mult_truth = c(rep(truth$effect_nat_inf_mult[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4),
+                     truth$nat_inf_lower_bound_mult[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]],
+                     rep(truth$effect_doomed_mult[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3),
+                     truth$doomed_lower_bound_mult[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]],
+                     rep(truth$effect_pop_mult[truth$inflation == grid$inflation[i] & truth$nat_inf_epsilon == grid$nat_inf_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3))
     )
     
     result_df$additive_diff <- result_df$additive_estimate - result_df$additive_truth
