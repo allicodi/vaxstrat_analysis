@@ -7,7 +7,7 @@ default:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ X1 * X2 * X3"
@@ -25,7 +25,7 @@ violate_nat_inf:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: [1, 0.75, 0.5, 0.25, 0.1, 0.01]
+  protected_epsilon: [1, 0.75, 0.5, 0.25, 0.1, 0.01]
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ X1 * X2 * X3"
@@ -43,7 +43,7 @@ misspecify_outcome:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ 1"
@@ -61,7 +61,7 @@ misspecify_infection:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ X1 * X2 * X3"
@@ -79,7 +79,7 @@ misspecify_vaccine:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ X1 * X2 * X3"
@@ -97,7 +97,7 @@ misspecify_outcome_infection:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ X1 * X2 * X3"
   Y_X_S1: "Y ~ 1"
@@ -115,7 +115,7 @@ misspecify_outcome_vaccine:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ 1"
@@ -133,7 +133,7 @@ misspecify_infection_vaccine:
     - 4000
   inflation: 0.1
   effect_protect: TRUE
-  nat_inf_epsilon: 1
+  protected_epsilon: 1
   doomed_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ X1 * X2 * X3"
