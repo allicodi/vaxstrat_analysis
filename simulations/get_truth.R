@@ -97,7 +97,7 @@ get_truth_provide <- function(config, n = 1e7, seed = 12345){
 get_truth_generic <- function(config, n = 1e7, seed = 12345){
   
   grid <- expand.grid(effect_protect = config$effect_protect,
-                      inflation = as.numeric(config$inflation),
+                      doomed_inflation = as.numeric(config$doomed_inflation),
                       protected_epsilon = as.numeric(config$protected_epsilon),
                       doomed_epsilon = as.numeric(config$doomed_epsilon))
   
@@ -124,7 +124,7 @@ get_truth_generic <- function(config, n = 1e7, seed = 12345){
   for(i in 1:nrow(grid)){
     big_data <- simulate_data_generic(seed = seed,
                                       effect_protect = grid$effect_protect[i],
-                                      inflation = grid$inflation[i],
+                                      doomed_inflation = grid$doomed_inflation[i],
                                       protected_epsilon = grid$protected_epsilon[i], 
                                       doomed_epsilon = grid$doomed_epsilon[i],
                                       n = n)
