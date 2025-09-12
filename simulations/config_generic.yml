@@ -5,7 +5,7 @@ default:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
@@ -23,7 +23,7 @@ violate_nat_inf:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: [1, 0.75, 0.5, 0.25, 0.1, 0.01]
   doomed_epsilon: 1
@@ -41,7 +41,7 @@ misspecify_outcome:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
@@ -59,7 +59,7 @@ misspecify_infection:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
@@ -77,7 +77,7 @@ misspecify_vaccine:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
@@ -95,7 +95,7 @@ misspecify_outcome_infection:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
@@ -113,7 +113,7 @@ misspecify_outcome_vaccine:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
@@ -131,7 +131,7 @@ misspecify_infection_vaccine:
     - 1000
     - 2000
     - 4000
-  inflation: 0.1
+  doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
