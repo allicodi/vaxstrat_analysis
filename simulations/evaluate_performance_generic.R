@@ -3,6 +3,8 @@
 # ------------------------------------------------------------------------------
 
 # Path to installed packages on cluster
+options(echo = TRUE)
+
 .libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
 
 here::i_am("evaluate_performance_generic.R")
