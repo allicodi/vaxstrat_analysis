@@ -358,7 +358,7 @@ simulate_data_generic <- function(seed = 12345,
   # Principal Strata ------------------------------------------------------------
   
   data$p_doomed__x <- plogis(-1 + 0.5*data$X1 - 1*data$X1*data$X2 - 0.5*data$X3)
-  data$p_immune__x <- plogis(-1 + 0.5*data$X1 - 1*data$X3*data$X1 - 0.5*data$X3)
+  data$p_immune__x <- plogis(-1 + 0.2*data$X1 - 1*data$X3*data$X1 - 0.5*data$X3)
   data$p_protected__x <- 1 - data$p_doomed__x - data$p_immune__x
   
   # Sample the strata
