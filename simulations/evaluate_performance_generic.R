@@ -160,6 +160,32 @@ for(fname in files){
           res$pop$ipw$pt_est['psi_1'],
           res$pop$aipw$pt_est['psi_1'])
       ),
+      psi_1_lower_ci = c(
+        c(res$nat_inf$gcomp$boot_se$lower_ci_psi_1,
+          res$nat_inf$ipw$boot_se$lower_ci_psi_1,
+          res$nat_inf$aipw$pt_est['psi_1'] - 1.96*res$nat_inf$aipw$pt_est['se_psi_1'],
+          res$nat_inf$tmle$pt_est['psi_1'] - 1.96*res$nat_inf$tmle$pt_est['se_psi_1']),
+        c(res$doomed$gcomp$boot_se$lower_ci_additive,
+          res$doomed$ipw$boot_se$lower_ci_additive,
+          res$doomed$aipw$pt_est['psi_1'] - 1.96*res$doomed$aipw$pt_est['se_psi_1']),
+        c(res$pop$gcomp$boot_se$lower_ci_psi_1,
+          res$pop$ipw$boot_se$lower_ci_psi_1,
+          res$pop$aipw$pt_est['psi_1'] - 1.96*res$pop$aipw$pt_est['se_psi_1'])
+      ),
+      psi_1_upper_ci = c(
+        c(res$nat_inf$gcomp$boot_se$upper_ci_psi_1,
+          res$nat_inf$ipw$boot_se$upper_ci_psi_1,
+          res$nat_inf$aipw$pt_est['psi_1'] + 1.96*res$nat_inf$aipw$pt_est['se_psi_1'],
+          res$nat_inf$tmle$pt_est['psi_1'] + 1.96*res$nat_inf$tmle$pt_est['se_psi_1']),
+        c(res$doomed$gcomp$boot_se$upper_ci_psi_1,
+          res$doomed$ipw$boot_se$upper_ci_psi_1,
+          res$doomed$aipw$pt_est['psi_1'] + 1.96*res$doomed$aipw$pt_est['se_psi_1']),
+        c(res$pop$gcomp$boot_se$upper_ci_psi_1,
+          res$pop$ipw$boot_se$upper_ci_psi_1,
+          res$pop$aipw$pt_est['psi_1'] + 1.96*res$pop$aipw$pt_est['se_psi_1'])
+      ),
+      
+      
       psi_0 = c(
         c(res$nat_inf$gcomp$pt_est['psi_0'],
           res$nat_inf$ipw$pt_est['psi_0'],
@@ -172,6 +198,33 @@ for(fname in files){
           res$pop$ipw$pt_est['psi_0'],
           res$pop$aipw$pt_est['psi_0'])
       ),
+      psi_0_lower_ci = c(
+        c(res$nat_inf$gcomp$boot_se$lower_ci_psi_0,
+          res$nat_inf$ipw$boot_se$lower_ci_psi_0,
+          res$nat_inf$aipw$pt_est['psi_0'] - 1.96*res$nat_inf$aipw$pt_est['se_psi_0'],
+          res$nat_inf$tmle$pt_est['psi_0'] - 1.96*res$nat_inf$tmle$pt_est['se_psi_0']),
+        c(res$doomed$gcomp$boot_se$lower_ci_additive,
+          res$doomed$ipw$boot_se$lower_ci_additive,
+          res$doomed$aipw$pt_est['psi_0'] - 1.96*res$doomed$aipw$pt_est['se_psi_0']),
+        c(res$pop$gcomp$boot_se$lower_ci_psi_0,
+          res$pop$ipw$boot_se$lower_ci_psi_0,
+          res$pop$aipw$pt_est['psi_0'] - 1.96*res$pop$aipw$pt_est['se_psi_0'])
+      ),
+      psi_0_upper_ci = c(
+        c(res$nat_inf$gcomp$boot_se$upper_ci_psi_0,
+          res$nat_inf$ipw$boot_se$upper_ci_psi_0,
+          res$nat_inf$aipw$pt_est['psi_0'] + 1.96*res$nat_inf$aipw$pt_est['se_psi_0'],
+          res$nat_inf$tmle$pt_est['psi_0'] + 1.96*res$nat_inf$tmle$pt_est['se_psi_0']),
+        c(res$doomed$gcomp$boot_se$upper_ci_psi_0,
+          res$doomed$ipw$boot_se$upper_ci_psi_0,
+          res$doomed$aipw$pt_est['psi_0'] + 1.96*res$doomed$aipw$pt_est['se_psi_0']),
+        c(res$pop$gcomp$boot_se$upper_ci_psi_0,
+          res$pop$ipw$boot_se$upper_ci_psi_0,
+          res$pop$aipw$pt_est['psi_0'] + 1.96*res$pop$aipw$pt_est['se_psi_0'])
+      ),
+      
+      
+      
       # Truth
       additive_truth = c(rep(truth$effect_nat_inf[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4), 
                          rep(truth$effect_doomed[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3), 
@@ -199,6 +252,11 @@ for(fname in files){
     result_df$mult_coverage <- ifelse(result_df$mult_truth >= result_df$mult_lower_ci &
                                         result_df$mult_truth <= result_df$mult_upper_ci, 1, 0)
     
+    result_df$psi_1_coverage <- ifelse(result_df$psi_1_truth >= result_df$psi_1_lower_ci &
+                                            result_df$psi_1_truth <= result_df$psi_1_upper_ci, 1, 0)
+    result_df$psi_0_coverage <- ifelse(result_df$psi_0_truth >= result_df$psi_0_lower_ci &
+                                            result_df$psi_0_truth <= result_df$psi_0_upper_ci, 1, 0)
+    
     all_result_df <- rbind(all_result_df, result_df)
   }
   
@@ -221,7 +279,15 @@ summary_df <- all_result_df %>%
     coverage_mult = mean(mult_coverage, na.rm = TRUE),
     
     bias_psi_1 = mean(psi_1_diff, na.rm = TRUE),
+    var_psi_1 = var(psi_1, na.rm = TRUE),
+    mse_psi_1 = mean(psi_1_diff^2, na.rm = TRUE),
+    coverage_psi_1 = mean(psi_1_coverage, na.rm = TRUE),
+    
+    
     bias_psi_0 = mean(psi_0_diff, na.rm = TRUE),
+    var_psi_0 = var(psi_0, na.rm = TRUE),
+    mse_psi_0 = mean(psi_0_diff^2, na.rm = TRUE),
+    coverage_psi_10 = mean(psi_0_coverage, na.rm = TRUE),
     
     .groups = "drop"
   )
