@@ -147,17 +147,52 @@ for(fname in files){
           res$pop$ipw$boot_se$upper_ci_mult,
           exp(res$pop$aipw$pt_est['log_multiplicative_effect'] + 1.96*res$pop$aipw$pt_est['log_multiplicative_se']))
       ),
+      # NEW psi_1 and psi_0
+      psi_1 = c(
+        c(res$nat_inf$gcomp$pt_est['psi_1'],
+          res$nat_inf$ipw$pt_est['psi_1'],
+          res$nat_inf$aipw$pt_est['psi_1'],
+          res$nat_inf$tmle$pt_est['psi_1']),
+        c(res$doomed$gcomp$pt_est['psi_1'],
+          res$doomed$ipw$pt_est['psi_1'],
+          res$doomed$aipw$pt_est['psi_1']),
+        c(res$pop$gcomp$pt_est['psi_1'],
+          res$pop$ipw$pt_est['psi_1'],
+          res$pop$aipw$pt_est['psi_1'])
+      ),
+      psi_0 = c(
+        c(res$nat_inf$gcomp$pt_est['psi_0'],
+          res$nat_inf$ipw$pt_est['psi_0'],
+          res$nat_inf$aipw$pt_est['psi_0'],
+          res$nat_inf$tmle$pt_est['psi_0']),
+        c(res$doomed$gcomp$pt_est['psi_0'],
+          res$doomed$ipw$pt_est['psi_0'],
+          res$doomed$aipw$pt_est['psi_0']),
+        c(res$pop$gcomp$pt_est['psi_0'],
+          res$pop$ipw$pt_est['psi_0'],
+          res$pop$aipw$pt_est['psi_0'])
+      ),
       # Truth
       additive_truth = c(rep(truth$effect_nat_inf[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4), 
                          rep(truth$effect_doomed[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3), 
                          rep(truth$effect_pop[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3)),
       mult_truth = c(rep(truth$effect_nat_inf_mult[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4),
                      rep(truth$effect_doomed_mult[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3),
-                     rep(truth$effect_pop_mult[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3))
+                     rep(truth$effect_pop_mult[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3)),
+      
+      psi_1_truth = c(rep(truth$E_Y1__protected_or_doomed[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4), 
+                         rep(truth$E_Y1__doomed[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3), 
+                         rep(truth$E_Y1__pop[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3)),
+      psi_0_truth = c(rep(truth$E_Y0__protected_or_doomed[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 4), 
+                         rep(truth$E_Y0__doomed[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3), 
+                         rep(truth$E_Y0__pop[truth$doomed_inflation == grid$doomed_inflation[i] & truth$protected_epsilon == grid$protected_epsilon[i] & truth$doomed_epsilon == grid$doomed_epsilon[i]], 3)),
     )
     
     result_df$additive_diff <- result_df$additive_estimate - result_df$additive_truth
     result_df$mult_diff <- result_df$mult_estimate - result_df$mult_truth
+    
+    result_df$psi_1_diff <- result_df$psi_1 - result_df$psi_1_truth
+    result_df$psi_0_diff <- result_df$psi_0 - result_df$psi_0_truth
     
     result_df$additive_coverage <- ifelse(result_df$additive_truth >= result_df$additive_lower_ci &
                                             result_df$additive_truth <= result_df$additive_upper_ci, 1, 0)
