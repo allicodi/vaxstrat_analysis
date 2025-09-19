@@ -16,7 +16,7 @@ library(vegrowth)
 library(dplyr)
 
 # Path to projects folder where results will be saved
-project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/generic/"
+project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/generic_new/"
 
 # command args config setting
 cargs <- commandArgs(trailingOnly = TRUE)
