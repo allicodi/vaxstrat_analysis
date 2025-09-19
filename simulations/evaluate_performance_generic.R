@@ -219,6 +219,10 @@ summary_df <- all_result_df %>%
     var_mult = var(mult_estimate, na.rm = TRUE),
     mse_mult = mean(mult_diff^2, na.rm = TRUE),
     coverage_mult = mean(mult_coverage, na.rm = TRUE),
+    
+    bias_psi_1 = mean(psi_1_diff, na.rm = TRUE),
+    bias_psi_0 = mean(psi_0_diff, na.rm = TRUE),
+    
     .groups = "drop"
   )
 
