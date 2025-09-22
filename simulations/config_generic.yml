@@ -65,6 +65,8 @@ misspecify_infection:
     - 1000
     - 2000
     - 4000
+  estimand: ["nat_inf", "doomed", "pop"]
+  method: ["gcomp", "ipw", "aipw", "tmle"]
   doomed_inflation: 0.1
   effect_protect: TRUE
   protected_epsilon: 1
