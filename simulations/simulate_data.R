@@ -395,8 +395,8 @@ data$p_Y01__immune <- plogis(-0.5 +
   
   # Immune: 
   is_immune <- data$stratum == "Immune"
-  data$S0[is_immune] <- 1
-  data$S1[is_immune] <- 1
+  data$S0[is_immune] <- 0
+  data$S1[is_immune] <- 0
   data$Y1[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y01__immune[is_immune])
   data$Y0[is_immune] <- data$Y1[is_immune]
   data$S[is_immune & data$Z == 1] <- data$S1[is_immune & data$Z == 1]
@@ -407,7 +407,7 @@ data$p_Y01__immune <- plogis(-0.5 +
   # Protected, Z=1:
   is_protected <- data$stratum == "Protected" 
   data$S0[is_protected] <- 1
-  data$S1[is_protected] <- 1
+  data$S1[is_protected] <- 0
   data$Y1[is_protected] <- rbinom(sum(is_protected), 1, data$p_Y1__protect[is_protected])
   data$Y0[is_protected] <- rbinom(sum(is_protected), 1, data$p_Y0__protect[is_protected])
   data$S[is_protected & data$Z == 1] <- data$S1[is_protected & data$Z == 1]
