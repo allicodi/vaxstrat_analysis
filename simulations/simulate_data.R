@@ -297,6 +297,7 @@ simulate_data_generic <- function(seed = 12345,
                                   doomed_inflation = 0,
                                   doomed_epsilon = 1,
                                   protected_epsilon = 1,
+                                  immune_epsilon = 1,
                                   n = 1e5){
   set.seed(seed)
   data <- data.frame(id = 1:n)
@@ -361,16 +362,20 @@ simulate_data_generic <- function(seed = 12345,
   
   # flag to make protected effect = 0
   if(effect_protect){
-data$p_Y01__immune <- plogis(-0.5 +                                                            
+    # immune_epislon
+    data$p_Y1__immune <- plogis(-0.5 +                                                            
                              0.5 * data$X1 +                                                   
                              -1 * data$X3 * data$X1 +                                          
                              0.5 * data$X2)
+    data$p_Y0__immune <- data$p_Y1__immune * immune_epsilon
+
   } else{
     # set probability in immune = to probability of protected without abx
-    data$p_Y01__immune <- data$p_Y0__protect
+    data$p_Y1__immune <- data$p_Y0__protect
+    data$p_Y0__immune <- data$p_Y1__immune * immune_epsilon
   }
   
-  data$p_Y1__protect <- data$p_Y01__immune * protected_epsilon
+  data$p_Y1__protect <- data$p_Y1__immune * protected_epsilon
   
   # Vaccine (Z) & Infection (S) & Outcome (Y) ----------------------------------------
   
@@ -397,8 +402,12 @@ data$p_Y01__immune <- plogis(-0.5 +
   is_immune <- data$stratum == "Immune"
   data$S0[is_immune] <- 0
   data$S1[is_immune] <- 0
-  data$Y1[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y01__immune[is_immune])
-  data$Y0[is_immune] <- data$Y1[is_immune]
+  data$Y1[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y1__immune[is_immune])
+  # "hard" exclusion restriction, Y(1,0) = Y(0,0)
+  # data$Y0[is_immune] <- data$Y1[is_immune]
+  # "stochastic" exclusion restriction, E[Y(1) | S(0) = 0] = E[Y(0) | S(0) = 0]
+  data$Y0[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y0__immune[is_immune])
+
   data$S[is_immune & data$Z == 1] <- data$S1[is_immune & data$Z == 1]
   data$S[is_immune & data$Z == 0] <- data$S0[is_immune & data$Z == 0]
   data$Y[is_immune & data$Z == 1] <- data$Y1[is_immune & data$Z == 1]
