@@ -11,8 +11,8 @@ setting <- cargs[[1]]
 cfg <- yaml::read_yaml("config_generic.yml")
 config <- cfg[[setting]]
 
-df <- readRDS(paste0("results/generic_new/", setting, "_summary.Rds")) #%>%
- # filter(method %in% c("gcomp", "tmle"))
+df <- readRDS(paste0("results/generic_ER/", setting, "_summary.Rds")) %>%
+ filter(method != "ipw_ER")
 
 # Pivot additive columns only
 df_add <- df %>%
@@ -34,6 +34,9 @@ df_add <- df %>%
       method == "tmle" ~ "TMLE",
       method == "ipw" ~ "IPW",
       method == "gcomp" ~ "G-computation",
+      method == "aipw_ER" ~ "AIPW (ER)",
+      method == "ipw_ER" ~ "IPW (ER)",
+      method == "gcomp_ER" ~ "G-computation (ER)",
       TRUE ~ method  
     )
   )
@@ -63,7 +66,7 @@ combined_plot <- bias_plot / var_plot / coverage_plot +
 combined_plot
 
 ggsave(
-  filename = here::here(paste0("results/generic_new/figures/", setting, "_results_additive.png")),
+  filename = here::here(paste0("results/generic_ER/figures/", setting, "_results_additive.png")),
   plot = combined_plot,
   width = 13.5,  
   height = 9, 

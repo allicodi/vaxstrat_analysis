@@ -158,6 +158,7 @@ misspecify_outcome_vaccine:
   effect_protect: TRUE
   protected_epsilon: 1
   doomed_epsilon: 1
+  immune_epsilon: 1
   Y_Z_X: "Y ~ Z * X1 * X2 * X3"
   Y_X_S1: "Y ~ 1"
   Y_X_S0: "Y ~ 1"

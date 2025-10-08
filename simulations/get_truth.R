@@ -97,7 +97,7 @@ get_truth_provide <- function(config, n = 1e7, seed = 12345){
 get_truth_generic <- function(config, n = 1e7, seed = 12345){
   
   grid <- expand.grid(effect_protect = config$effect_protect,
-                        doomed_inflation = as.numeric(config$doomed_inflation),
+                      doomed_inflation = as.numeric(config$doomed_inflation),
                       protected_epsilon = as.numeric(config$protected_epsilon),
                       doomed_epsilon = as.numeric(config$doomed_epsilon),
                       immune_epsilon = as.numeric(config$immune_epsilon))
