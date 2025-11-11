@@ -10,11 +10,12 @@ here::i_am("run_analysis_generic.R")
 source(here::here("simulate_data.R"))
 
 #devtools::load_all("../../shigella_projects/packages/vegrowth/")
+devtools::load_all("~/vegrowth")
 
 #library(future)
 library(future.apply)
 library(SuperLearner)
-library(vegrowth)
+#library(vegrowth)
 
 # For initial debugging scratch file
 options(echo = TRUE)
@@ -75,6 +76,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
                                 estimand = config$estimand,
                                 method = config$method,
                                 exclusion_restriction = c(TRUE, FALSE), # do for both exclusion restriction scenarios
+                                cross_world = c(TRUE, FALSE), # do for cross-world both true and false
                                 n_boot = 1000,
                                 seed = seed,
                                 return_se = TRUE,
