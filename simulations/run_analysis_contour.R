@@ -138,7 +138,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, sim_type,
     # ER + CW
     nat_inf_er_cw_pt_est = results$nat_inf$aipw_ER_CW$pt_est["additive_effect"],
     nat_inf_er_cw_se = results$nat_inf$aipw_ER_CW$pt_est["additive_se"],
-    nat_inf_er_cw_reject = results$nat_inf_ER_CW$aipw$reject$additive,
+    nat_inf_er_cw_reject = results$nat_inf$aipw_ER_CW$reject$additive,
     # Doomed AIPW
     doomed_pt_est = results$doomed$aipw$pt_est["additive_effect"],
     doomed_se = results$doomed$aipw$pt_est["additive_se"],
