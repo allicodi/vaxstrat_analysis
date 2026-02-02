@@ -22,12 +22,12 @@ library(SuperLearner)
 options(echo = TRUE)
 
 # this was for protect, probably can make smaller
-options(future.globals.maxSize = 5 * 1024^3) # 5 GB
-options(future.globals.onReference = "ignore")
+# options(future.globals.maxSize = 5 * 1024^3) # 5 GB
+# options(future.globals.onReference = "ignore")
 
-ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "1"))
-print(ncores)
-plan(multisession, workers = ncores)
+# ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "1"))
+# print(ncores)
+# plan(multisession, workers = ncores)
 
 project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/sim_1_bounds/"
 seed <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
