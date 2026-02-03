@@ -22,16 +22,18 @@ library(SuperLearner)
 options(echo = TRUE)
 
 # this was for protect, probably can make smaller
-options(future.globals.maxSize = 5 * 1024^3) # 5 GB
-options(future.globals.onReference = "ignore")
+# options(future.globals.maxSize = 5 * 1024^3) # 5 GB
+# options(future.globals.onReference = "ignore")
 
-ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "1"))
-print(ncores)
-plan(multisession, workers = ncores)
+# ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "1"))
+# print(ncores)
+# plan(multisession, workers = ncores)
 
 project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/sim_1_bounds/"
 seed <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 setting <- Sys.getenv("SETTING")
+
+set.seed(seed)
 
 cfg <- yaml::read_yaml("config_sim_1_bounds.yml")
 config <- cfg[[setting]]
@@ -50,9 +52,8 @@ grid <- expand.grid(seed = seed,
                     doomed_epsilon = as.numeric(config$doomed_epsilon),
                     immune_epsilon = as.numeric(config$immune_epsilon))
 
-results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
-  
-  library(SuperLearner)
+results <- lapply(1:nrow(grid), function(i, grid){
+# results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
   
   data <- simulate_data_generic(seed = grid$seed[i],
                                 effect_protect = grid$effect_protect[i],
@@ -85,19 +86,10 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
                       effect_dir = "positive",
                       epsilon = grid$protected_epsilon[i])
   
-  # save results object, can splice together pieces to get bias, coverage, etc. later
-  # except this is unnecessary? object not that big
-  # saveRDS(results, paste0(project_dir, setting, "/",
-  #                         "seed_", grid$seed[i],
-  #                         "_n_", grid$n_sample_size[i],
-  #                         "_inflation_", grid$inflation[i],
-  #                         "_doomedepsilon_", grid$doomed_epsilon[i],
-  #                         "_natinfepsilon_", grid$nat_inf_epsilon[i],
-  #                         "_effectprotect_", grid$effect_protect[i], ".Rds"))
-  
   return(results)
   
-}, grid = grid, future.seed = seed)
+}, grid = grid)
+#}, grid = grid, future.seed = seed)
 
 # full_results <- do.call(rbind, results)
 

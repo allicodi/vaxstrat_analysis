@@ -308,6 +308,128 @@ get_truth_contour <- function(config, n = 1e7, seed = 12345){
   return(truth)
 }
 
+get_truth_generic_bounds <- function(config, n = 1e7, seed = 12345){
+  
+  grid <- expand.grid(effect_protect = config$effect_protect,
+                      doomed_inflation = as.numeric(config$doomed_inflation),
+                      protected_epsilon = as.numeric(config$protected_epsilon),
+                      doomed_epsilon = as.numeric(config$doomed_epsilon),
+                      immune_epsilon = as.numeric(config$immune_epsilon))
+  
+  # covariate combinations
+  X_combos <- c("X1", "X2", "X3",
+                "X1X2", "X2X3", "X1X3",
+                "X1X2X3")
+  
+  # all column names you want
+  cov_bound_names <- c(
+    paste0("cov_adj_upper_bound_", X_combos),
+    paste0("cov_adj_lower_bound_", X_combos),
+    paste0("cov_adj_upper_bound_mult_", X_combos),
+    paste0("cov_adj_lower_bound_mult_", X_combos)
+  )
+  
+  # baseline truth columns
+  base_names <- c(
+    "nat_inf_upper_bound",
+    "nat_inf_upper_bound_mult",
+    "nat_inf_lower_bound",
+    "nat_inf_lower_bound_mult"
+  )
+  
+  point_names <- c(
+    "E_Y1__protected_or_doomed",
+    "E_Y0__protected_or_doomed",
+    "effect_nat_inf",
+    "effect_nat_inf_mult"
+  )
+  
+  all_truth_names <- c(point_names, base_names, cov_bound_names)
+  
+  na_cols <- data.frame(
+    matrix(
+      NA_real_,
+      nrow = nrow(grid),
+      ncol = length(all_truth_names),
+      dimnames = list(NULL, all_truth_names)
+    )
+  )
+  
+  truth <- cbind(grid, na_cols)
+  
+  for(i in 1:nrow(grid)){
+    big_data <- simulate_data_generic(seed = seed,
+                                      effect_protect = grid$effect_protect[i],
+                                      doomed_inflation = grid$doomed_inflation[i],
+                                      protected_epsilon = grid$protected_epsilon[i], 
+                                      doomed_epsilon = grid$doomed_epsilon[i],
+                                      immune_epsilon = grid$immune_epsilon[i],
+                                      n = n)
+    
+    big_data$X1X2 <- as.numeric(interaction(big_data$X1, big_data$X2))
+    big_data$X2X3 <- as.numeric(interaction(big_data$X2, big_data$X3))
+    big_data$X1X3 <- as.numeric(interaction(big_data$X1, big_data$X3))
+    big_data$X1X2X3 <- as.numeric(interaction(big_data$X1, big_data$X2, big_data$X3))
+    
+    # Naturally infected estimand
+    truth$E_Y1__protected_or_doomed[i] <- mean(big_data$Y[
+      big_data$Z == 1 &
+        big_data$stratum %in% c("Protected", "Doomed")
+    ])
+    
+    truth$E_Y0__protected_or_doomed[i] <- mean(big_data$Y[
+      big_data$Z == 0 &
+        big_data$stratum %in% c("Protected", "Doomed")
+    ])
+    
+    truth$effect_nat_inf[i] <-
+      truth$E_Y1__protected_or_doomed[i] -
+      truth$E_Y0__protected_or_doomed[i]
+    
+    truth$effect_nat_inf_mult[i] <-
+      truth$E_Y1__protected_or_doomed[i] /
+      truth$E_Y0__protected_or_doomed[i]
+    
+    ## ----------------------------
+    ## Unadjusted bounds
+    ## ----------------------------
+    nat_inf_bound <- get_bound_nat_inf(
+      big_data,
+      Y_name = "Y",
+      Z_name = "Z",
+      S_name = "S",
+      family = "binomial"
+    )
+    
+    truth$nat_inf_upper_bound[i]        <- nat_inf_bound["additive_effect_upper"]
+    truth$nat_inf_lower_bound[i]        <- nat_inf_bound["additive_effect_lower"]
+    truth$nat_inf_upper_bound_mult[i]   <- nat_inf_bound["mult_effect_upper"]
+    truth$nat_inf_lower_bound_mult[i]   <- nat_inf_bound["mult_effect_lower"]
+    
+    ## ----------------------------
+    ## Covariate-adjusted bounds
+    ## ----------------------------
+    for(X in X_combos){
+      
+      cov_adj_bound <- get_cov_adj_bound_nat_inf(
+        big_data,
+        X_name = X,
+        Y_name = "Y",
+        Z_name = "Z",
+        S_name = "S",
+        family = "binomial"
+      )
+      
+      truth[i, paste0("cov_adj_upper_bound_", X)]       <- cov_adj_bound["additive_effect_upper"]
+      truth[i, paste0("cov_adj_lower_bound_", X)]       <- cov_adj_bound["additive_effect_lower"]
+      truth[i, paste0("cov_adj_upper_bound_mult_", X)]  <- cov_adj_bound["mult_effect_upper"]
+      truth[i, paste0("cov_adj_lower_bound_mult_", X)]  <- cov_adj_bound["mult_effect_lower"]
+    }
+  }
+  
+  return(truth)
+}
+
 # test for series of inflations to find which ones make effect size 0 for each estimand
 # config <- config::get(file = here::here("config_contour.yml"), config = "contour_plot")
 #config <- config::get(file = here::here("config_generic.yml"), config = "violate_nat_inf")
