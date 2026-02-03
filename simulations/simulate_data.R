@@ -17,7 +17,6 @@ simulate_data_provide <- function(seed = 12345,
                           protected_epsilon = 1,
                           immune_delta = 0,
                           protected_delta = 0,
-                          start_from_doomed = TRUE,
                           n = 1e5){
   set.seed(seed)
   data <- data.frame(id = 1:n)
@@ -81,79 +80,41 @@ simulate_data_provide <- function(seed = 12345,
   
   # Outcome Probabilities --------------------------------------------------------
   
-  if(start_from_doomed){
-    # P(Y(1) = 1 | Doomed, X)
-    # approximated from data using regression of Y ~ X | Z = 1, S = 1
-    data$p_abx_1__doomed <-  plogis(
-      -0.70 + 0.78 * as.numeric(data$gender == 1) +
-      -1.44 * data$wk10_haz + 0.49 * data$num_hh_sleep
-    )
-    
-    # P(Y(0) = 1 | Doomed, X)
-    # doomed_inflation controls size of effect in Doomed principal stratum
-    # here we subtract doomed_inflation so that positive values of doomed_inflation lead
-    # to larger positive effects in the Doomed
-    data$p_abx_0__doomed <- plogis(qlogis(data$p_abx_1__doomed) - doomed_inflation)
-    
-    # P(Y(0) = 1 | Protected, X)
-    # should equal P(Y(0) = 1 | Doomed, X) to satisfy partial principal ignorability
-    # required for identification of Doomed estimand
-    # use doomed_epislon to violate this assumption
-    data$p_abx_0__protect <- data$p_abx_0__doomed * doomed_epsilon
-    
+  # P(Y(1) = 1 | Doomed, X)
+  # approximated from data using regression of Y ~ X | Z = 1, S = 1
+  data$p_abx_1__doomed <-  plogis(
+    -0.70 + 0.78 * as.numeric(data$gender == 1) +
+    -1.44 * data$wk10_haz + 0.49 * data$num_hh_sleep
+  )
+  
+  # P(Y(0) = 1 | Doomed, X)
+  # doomed_inflation controls size of effect in Doomed principal stratum
+  # here we subtract doomed_inflation so that positive values of doomed_inflation lead
+  # to larger positive effects in the Doomed
+  data$p_abx_0__doomed <- plogis(qlogis(data$p_abx_1__doomed) - doomed_inflation)
+  
+  # P(Y(0) = 1 | Immune, X)
+  data$p_abx_0__immune <- plogis(
+    -0.29 + 0.41 * as.numeric(data$gender == 1) +
+    -0.10 * data$wk10_haz + 0.13 * data$num_hh_sleep
+  )
+  # P(Y(1) = 1 | Immune, X)
+  # should equal P(Y(0) = 1 | Immune, X) to satisfy stochastic exclusion restriction
+  data$p_abx_1__immune <- data$p_abx_0__immune 
 
-    # P(Y(1) = 1 | Protected, X)
-    # protected_inflation controls size of effect in Protected principal stratum
-    # here we add protected_inflation so that positive values of protected_inflation lead
-    # to larger positive effects in the Protected. this is consistent with direction of 
-    # doomed_inflation above
-    data$p_abx_1__protect <- plogis(qlogis(data$p_abx_0__protect) + protected_inflation) 
-    
-    # P(Y(1) = 1 | Immune, X)
-    # should equal P(Y(1) = 1 | Immune, X) to satisfy partial principal ignorability
-    # required for identification of the Naturally Infected Estimand
-    # use protected_epsilon to violate this assumption
-    data$p_abx_1__immune <- data$p_abx_1__protect * protected_epsilon
+  # P(Y(1) = 1 | Immune, X)
+  # should equal P(Y(1) = 1 | Immune, X) to satisfy partial principal ignorability
+  # required for identification of the Naturally Infected Estimand
+  # use protected_epsilon to violate this assumption
+  data$p_abx_1__immune <- data$p_abx_1__protect * protected_epsilon
 
-    # P(Y(0) = 1 | Immune, X)
-    # should equal P(Y(1) = 1 | Immune, X) to satisfy stochastic exclusion restriction
-    data$p_abx_0__immune <- data$p_abx_1__immune
-  }else{
-    # P(Y(0) = 1 | Immune, X)
-    # approximated from data using regression Y ~ X | Z = 0, S = 0
-    data$p_abx_0__immune <- plogis(
-      -0.29 + 0.41 * as.numeric(data$gender == 1) +
-      -0.10 * data$wk10_haz + 0.13 * data$num_hh_sleep
-    )
-    # P(Y(1) = 1 | Immune, X)
-    # should equal P(Y(0) = 1 | Immune, X) to satisfy stochastic exclusion restriction
-    data$p_abx_1__immune <- data$p_abx_0__immune
+  # P(Y(0) = 1 | Protected, X)
+  # protected_inflation controls size of effect in Protected principal stratum
+  # NOTE: because this does not equal p_abx_0__doomed, we have a violation
+  # of prin ignorability needed to id the doomed estimand. but we are ok with that.
+  data$p_abx_0__protect <- plogis(qlogis(data$p_abx_1__protect) - protected_inflation)
 
-    # P(Y(1) = 1 | Protected, X)
-    # should equal P(Y(1) = 1 | Immune, X) to satisfy partial principal ignorability
-    # required for identification of the Naturally Infected Estimand
-    # use protected_epsilon to violate this assumption
-    # here, we divide by protected_epislon to keep its meaning the same regardless
-    # of whether start_from_doomed = TRUE or FALSE
-    data$p_abx_1__protect <- data$p_abx_1__immune / protected_epsilon
 
-    # P(Y(0) = 1 | Protected, X)
-    # protected_inflation controls size of effect in Protected principal stratum
-    # here we subtract protected_inflation so that positive values of protected_inflation lead
-    # to larger positive effects in the Protected
-    data$p_abx_0__protect <- plogis(qlogis(data$p_abx_1__protect) - protected_inflation)
-
-    # P(Y(0) = 1 | Doomed, X)
-    # should equal P(Y(0) = 1 | Protected, X) to satisfy partial principal ignorability
-    # required for identification of Doomed estimand
-    # here we divide by doomed_epislon to allow violation of this assumption and
-    # to keep direction consistent as above
-    data$p_abx_0__doomed <- data$p_abx_0__protect / doomed_epsilon
-    
-    # P(Y(1) = 1 | Doomed, X)
-    # use doomed_inflation to control size of effect in doomed
-    data$p_abx_1__doomed <- plogis(qlogis(data$p_abx_0__doomed) + doomed_inflation)
-  }
   # Vaccine & Rotaepi ------------------------------------------------------------
   
   data$rotaarm <- rbinom(n, 1, 0.5)
