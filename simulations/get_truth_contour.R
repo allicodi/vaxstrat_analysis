@@ -26,14 +26,23 @@ cfg <- yaml::read_yaml("config_contour.yml")
 sim_type <- "provide"
 
 # set to "provide_contour_plot" or "generic_contour_plot"; set n large (but if too large won't run well)
-settings <- c("provide_immune_30_ve_66__2",
-              "provide_immune_40_ve_66__2",
-              "provide_immune_50_ve_66__2",
-              "provide_immune_60_ve_66__2",
-              "provide_immune_70_ve_66__2",
-              "provide_immune_80_ve_66__2",
-              "provide_immune_60_ve_50__2",
-              "provide_immune_60_ve_85__2")
+# settings <- c("provide_immune_30_ve_66__2",
+#               "provide_immune_40_ve_66__2",
+#               "provide_immune_50_ve_66__2",
+#               "provide_immune_60_ve_66__2",
+#               "provide_immune_70_ve_66__2",
+#               "provide_immune_80_ve_66__2",
+#               "provide_immune_60_ve_50__2",
+#               "provide_immune_60_ve_85__2")
+
+# settings <- c("provide_immune_40_ve_66",
+#               "provide_immune_60_ve_66",
+#               "provide_immune_80_ve_66",
+#               "provide_immune_60_ve_50",
+#               "provide_immune_60_ve_85")
+
+settings <- c("provide_immune_40_ve_50",
+              "provide_immune_40_ve_85")
 
 for(setting in settings){
   config <- cfg[[setting]]

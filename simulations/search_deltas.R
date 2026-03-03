@@ -106,10 +106,13 @@ best_deltas(deltas, doomed = 0.13, immune = 0.60, protected = 0.27)
 
 # Immune 40, VE 50
 best_deltas(deltas, doomed = 0.30, immune = 0.40, protected = 0.30)
-
+# immune_delta protected_delta    doomed    immune protected     distance
+# 1        -1.16            0.59 0.3000449 0.4000708 0.2998844 2.039301e-08
 
 # Immune 40, VE 85
-
+best_deltas(deltas, doomed = 0.09, immune = 0.40, protected = 0.51)
+# immune_delta protected_delta     doomed   immune protected     distance
+# 1          0.1           -1.19 0.09007181 0.399219 0.5107091 1.117926e-06
 
 # ------------------------------------------------------------------------
 best_deltas(deltas, doomed = 0.23, immune = 0.30, protected = 0.47)

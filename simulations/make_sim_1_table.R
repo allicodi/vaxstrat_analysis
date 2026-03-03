@@ -21,33 +21,41 @@ summary_list <- list(
   "Violate Both" = violate_cw_er_summary
 )
 
-format_section <- function(df, n_value) {
+format_section <- function(df) {
   df %>%
-    filter(n == n_value) %>%
+    # filter(n == n_value) %>%
     mutate(
       method = factor(
         method,
         levels = c("aipw_CW", "aipw_ER", "aipw_ER_CW"),
         labels = c("CW AIPW", "ER AIPW", "CW & ER AIPW")
-      )
+      ),
+      `$sqrt(n) times$ Bias` = sqrt(n) * bias_additive,
+      `$n times$ Variance` = n * var_additive, 
+      `$n times$ MSE` = n * mse_additive, 
+      `$sqrt(n) times$ Bias ` = sqrt(n) * bias_mult,
+      `$n times$ Variance `  = n * var_mult,
+      `$n times$ MSE ` = n * mse_mult
     ) %>%
     arrange(method) %>%
     select(
       Method = method,
-      `Bias` = bias_additive,
-      `Variance`  = var_additive,
-      `Coverage`  = coverage_additive,
-      `Bias ` = bias_mult,
-      `Variance `  = var_mult,
-      `Coverage `  = coverage_mult
+      n,
+      `$sqrt(n) times$ Bias`,
+      `$n times$ Variance`,
+      `$n times$ MSE`,
+      `Coverage` = coverage_additive,
+      `$sqrt(n) times$ Bias `,
+      `$n times$ Variance `,
+      `$n times$ MSE `,
+      `Coverage ` = coverage_mult
     )
 }
 
 
-
-make_latex_table <- function(summary_list, n_value, caption, label) {
+make_latex_table <- function(summary_list, caption, label) {
   
-  section_tables <- lapply(summary_list, format_section, n_value = n_value)
+  section_tables <- lapply(summary_list, format_section)
   
   combined <- bind_rows(section_tables, .id = "Scenario")
   
@@ -72,21 +80,8 @@ make_latex_table <- function(summary_list, n_value, caption, label) {
     )
 }
 
-# n = 500
 make_latex_table(
   summary_list,
-  n_value = 500,
-  caption = "Bias, Variance, and Coverage (n = 500)",
-  label = "tab:bias_var_cov_n500"
+  caption = "Bias, Variance, and Coverage",
+  label = "tab:bias_var_cov"
 )
-
-# n = 4000
-make_latex_table(
-  summary_list,
-  n_value = 4000,
-  caption = "Bias, Variance, and Coverage (n = 4000)",
-  label = "tab:bias_var_cov_n4000"
-)
-
-
-

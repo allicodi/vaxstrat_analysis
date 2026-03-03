@@ -2,81 +2,21 @@
 # Make contour plots for effects 
 # ----------------------------------------------------------------------------
 
-# todo
-# keep ratio protected to doomed same
-# another row with more immune
-# third row with better VE (this VE is ~50%) -- stick w larger immune and higher VE
-
 here::i_am("plot_contour.R")
 
 library(plotly)
 library(RColorBrewer)
 cfg <- yaml::read_yaml("config_contour.yml")
 
-# New 2:
-# setting_names <- c("provide_immune_60_ve_50__2",
-#                    "provide_immune_60_ve_66__2",
-#                    "provide_immune_60_ve_85__2")
-# 
-# setting_annotations <- c("Protected: 20%\nDoomed: 20%\nImmune: 60%\nVE: 50%",
-#                          "Protected: 27%\nDoomed: 13%\nImmune: 60%\nVE: 66%",
-#                          "Protected: 34%\nDoomed: 6%\nImmune: 60%\nVE: 85%")
-
-# NEW 1:
 setting_names <- c("provide_immune_40_ve_66",
                    "provide_immune_60_ve_66",
-                   "provide_immune_80_ve_66")
+                   "provide_immune_40_ve_50",
+                   "provide_immune_40_ve_85")
 
-setting_annotations <- c("Protected: 40%\nDoomed: 20%\nImmune: 40%\nVE: 66%",
-                         "Protected: 27%\nDoomed: 13%\nImmune: 60%\nVE: 66%",
-                         "Protected: 13%\nDoomed: 7%\nImmune: 80%\nVE: 66%")
-
-# setting_names <- c("provide_immune_30_ve_66__2",
-#                    "provide_immune_40_ve_66__2",
-#                    "provide_immune_50_ve_66__2",
-#                    "provide_immune_60_ve_66__2",
-#                    "provide_immune_70_ve_66__2",
-#                    "provide_immune_80_ve_66__2")
-# 
-# setting_annotations <- c("Protected: 47%\nDoomed: 23%\nImmune: 30%\nVE: 66%",
-#                          "Protected: 40%\nDoomed: 20%\nImmune: 40%\nVE: 66%",
-#                          "Protected: 33%\nDoomed: 17%\nImmune: 50%\nVE: 66%",
-#                          "Protected: 27%\nDoomed: 13%\nImmune: 60%\nVE: 66%",
-#                          "Protected: 20%\nDoomed: 10%\nImmune: 70%\nVE: 66%",
-#                          "Protected: 13%\nDoomed: 7%\nImmune: 80%\nVE: 66%")
-
-# Original % Immune plot
-# setting_names <- c("provide_immune_30_ve_66",
-#                    "provide_immune_40_ve_66",
-#                    "provide_immune_50_ve_66",
-#                    "provide_immune_60_ve_66",
-#                    "provide_immune_70_ve_66",
-#                    "provide_immune_80_ve_66")
-# 
-# setting_annotations <- c("Protected: 47%\nDoomed: 23%\nImmune: 30%\nVE: 66%",
-#                          "Protected: 40%\nDoomed: 20%\nImmune: 40%\nVE: 66%",
-#                          "Protected: 33%\nDoomed: 17%\nImmune: 50%\nVE: 66%",
-#                          "Protected: 27%\nDoomed: 13%\nImmune: 60%\nVE: 66%",
-#                          "Protected: 20%\nDoomed: 10%\nImmune: 70%\nVE: 66%",
-#                          "Protected: 13%\nDoomed: 7%\nImmune: 80%\nVE: 66%")
-
-
-# Original VE plot
-# setting_names <- c("provide_immune_70_ve_85",
-#                    "provide_immune_70_ve_66",
-#                    "provide_immune_70_ve_50")
-# 
-# setting_annotations <- c("Protected: 25%\nDoomed: 5%\nImmune: 70%\nVE: 85%",
-#                         "Protected: 20%\nDoomed: 10%\nImmune: 70%\nVE: 66%",
-#                         "Protected: 15%\nDoomed: 15%\nImmune: 70%\nVE: 50%")
-
-# setting_names <- c("provide_immune_60_ve_50__2",
-#                    "provide_immune_60_ve_66__2",
-#                    "provide_immune_60_ve_85__2")
-# 
-# setting_annotations <- c("Protected: 20%\nDoomed: 20%\nImmune: 60%\nVE: 50%",
-#                          "Protected: 27%\nDoomed: 13%\nImmune: 60%\nVE: 66%",
-#                          "Protected: 34%\nDoomed: 6%\nImmune: 60%\nVE: 85%")
+setting_annotations <- c("P(Protected): 40%\nP(Doomed): 20%\nP(Immune): 40%\nVE: 66%",
+                         "P(Protected): 27%\nP(Doomed): 13%\nP(Immune): 60%\nVE: 66%",
+                         "P(Protected): 30%\nP(Doomed): 30%\nP(Immune): 40%\nVE: 50%",
+                         "P(Protected): 51%\nP(Doomed):  9%\nP(Immune): 40%\nVE: 85%")
 
 all_rows <- list()
 
@@ -88,33 +28,54 @@ all_truth <- lapply(setting_names, function(setting) {
 global_range <- range(unlist(lapply(all_truth, function(truth) {
   c(truth$effect_nat_inf, truth$effect_doomed, truth$effect_pop)
 })))
-levels_global <- pretty(global_range, n = 15)
+levels_global <- levels_global <- pretty(global_range, n = 15)  
 contour_size <- diff(levels_global)[1]
 zmin <- min(levels_global)
 zmax <- max(levels_global)
 
 my_colorscale <- "YlGnBu"
 
+# Define uniform axis settings once, outside make_contour
+x_tick_vals <- seq(0, -0.3, by = -0.1)   # adjust to match your actual x range
+y_tick_vals <- seq(0, -0.06, by = -0.02)   # adjust to match your actual y range
+x_range <- c(max(x_tick_vals) + 0.001, min(x_tick_vals) - 0.01)  # reversed
+y_range <- c(max(y_tick_vals) + 0.001, min(y_tick_vals) - 0.001)  # reversed
+
 make_contour <- function(x, y, z_matrix, trace_name) {
   plot_ly(
     x = rev(x), y = rev(y), z = z_matrix,
     type = "contour",
     zmin = zmin, zmax = zmax,
-    coloraxis = "coloraxis",  # <- use shared coloraxis
+    coloraxis = "coloraxis",
     contours = list(
       start = levels_global[1],
       end = levels_global[length(levels_global)],
-      size = contour_size,
+      size = contour_size ,   
       showlabels = TRUE,
-      labelfont = list(size = 14)
+      labelfont = list(size = 10),
+      labeldistance = 50 
     ),
     line = list(width = 2, color = 'black'),
     name = trace_name,
-    showscale = FALSE  # turn off per-trace colorbars
+    showscale = FALSE
   ) %>%
     layout(
-      xaxis = list(title = "Protected effect", autorange = "reversed"),
-      yaxis = list(title = "Doomed effect", autorange = "reversed")
+      xaxis = list(
+        title = "Protected effect",
+        range = x_range,
+        tickvals = x_tick_vals,
+        ticktext = as.character(x_tick_vals),
+        tickfont = list(size = 14),
+        titlefont = list(size = 16)
+      ),
+      yaxis = list(
+        title = "Doomed effect",
+        range = y_range,
+        tickvals = y_tick_vals,
+        ticktext = as.character(y_tick_vals),
+        tickfont = list(size = 14),
+        titlefont = list(size = 16)
+      )
     )
 }
 
@@ -169,7 +130,7 @@ for (row_idx in seq_along(setting_names)) {
     combos$nat_inf_er_cw_power[i]<- mean(as.numeric(sub$nat_inf_er_cw_reject))
   }
   
-  # tbh this was chatgpt, idk what it's doing, making polygon to overlay for power
+  # making polygon to overlay for power
   get_hull <- function(df, xcol, ycol) {
     if (nrow(df) < 3) return(df[0, ])
     hull_idx <- chull(df[[xcol]], df[[ycol]])
@@ -178,8 +139,9 @@ for (row_idx in seq_along(setting_names)) {
   }
   
   # gray out where doomed effect > protected effect
-  mask_points <- expand.grid(x = x, y = y)
-  mask_points <- subset(mask_points, y < x)
+  mask_points <- expand.grid(x = seq(min(x) -0.001, 0.005, by = 0.005), 
+                             y = seq(min(y) -0.001, 0.001, by = 0.005))
+  mask_points <- subset(mask_points, mask_points$y < mask_points$x)
   
   # Convex hull to get the polygon boundary
   if (nrow(mask_points) > 2) {
@@ -222,7 +184,7 @@ for (row_idx in seq_along(setting_names)) {
     add_trace(data = hull_pop, x = ~effect_protected, y = ~effect_doomed,
               type = "scatter", mode = "lines", 
               line = list(color = "#ED0000FF", width = 5),
-              name = "Population power ≥80% (n=700)", 
+              name = "Population power ≥80%", 
               legendgroup = "power", 
               showlegend = show_legend)
   
@@ -237,7 +199,7 @@ for (row_idx in seq_along(setting_names)) {
     add_trace(data = hull_nat_inf_er, x = ~effect_protected, y = ~effect_doomed,
               type = "scatter", mode = "lines", 
               line = list(color = "#00468BFF", width = 5),
-              name = "Naturally infected ER power ≥80% (n=700)", 
+              name = "Naturally infected (ER) power ≥80%", 
               legendgroup = "power", 
               showlegend = show_legend)
   
@@ -252,7 +214,7 @@ for (row_idx in seq_along(setting_names)) {
     add_trace(data = hull_nat_inf_cw, x = ~effect_protected, y = ~effect_doomed,
               type = "scatter", mode = "lines", 
               line = list(color = "#925E9FFF", width = 5),
-              name = "Naturally infected CW power ≥80% (n=700)", 
+              name = "Naturally infected (PI) power ≥80%", 
               legendgroup = "power", 
               showlegend = show_legend)
   
@@ -267,7 +229,7 @@ for (row_idx in seq_along(setting_names)) {
     add_trace(data = hull_nat_inf_er_cw, x = ~effect_protected, y = ~effect_doomed,
               type = "scatter", mode = "lines", 
               line = list(color = "#42B540FF", width = 5),
-              name = "Naturally infected ER + CW power ≥80% (n=700)", 
+              name = "Naturally infected (ER + PI) power ≥80%", 
               legendgroup = "power", 
               showlegend = show_legend)
   
@@ -292,11 +254,63 @@ for (row_idx in seq_along(setting_names)) {
   #     )
   #   ))
   
+  fig_all <- plot_ly(
+    x = x,
+    y = y,
+    type = "scatter",
+    mode = "markers",
+    marker = list(opacity = 0),
+    showlegend = FALSE
+  ) %>%
+    layout(
+      xaxis = list(
+        title = "Protected effect",
+        range = x_range,
+        tickvals = x_tick_vals,
+        ticktext = as.character(x_tick_vals),
+        tickfont = list(size = 14),
+        titlefont = list(size = 16)
+      ),
+      yaxis = list(
+        title = "Doomed effect",
+        range = y_range,
+        tickvals = y_tick_vals,
+        ticktext = as.character(y_tick_vals),
+        tickfont = list(size = 14),
+        titlefont = list(size = 16)
+      )
+    ) %>%
+    # add_polygons(
+    #   data = shade_poly,
+    #   x = ~x, y = ~y,
+    #   fillcolor = "rgba(128,128,128,0.4)",
+    #   line = list(width = 0),
+    #   inherit = FALSE,
+    #   showlegend = FALSE
+    # ) %>%
+    add_trace(data = hull_nat_inf_er_cw,
+              x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines",
+              line = list(color = "#42B540FF", width = 6.5)) %>%
+    add_trace(data = hull_nat_inf_cw,
+              x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines",
+              line = list(color = "#925E9FFF", width = 5)) %>%
+    add_trace(data = hull_nat_inf_er,
+              x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines",
+              line = list(color = "#00468BFF", width = 5)) %>%
+    add_trace(data = hull_pop,
+              x = ~effect_protected, y = ~effect_doomed,
+              type = "scatter", mode = "lines",
+              line = list(color = "#ED0000FF", width = 3.8)) 
+  
   # all_rows[[length(all_rows) + 1]] <- fig1
   all_rows[[length(all_rows) + 1]] <- fig2
   all_rows[[length(all_rows) + 1]] <- fig3
   all_rows[[length(all_rows) + 1]] <- fig4
   all_rows[[length(all_rows) + 1]] <- fig5
+  all_rows[[length(all_rows) + 1]] <- fig_all
   
   
   show_legend <- FALSE
@@ -304,11 +318,11 @@ for (row_idx in seq_along(setting_names)) {
 
 
 # ------------------------------------------------------------------------------
-# Assemble final 3 x 4 plot (NO nested subplots)
+# Assemble final 4 x 5 plot (NO nested subplots)
 # ------------------------------------------------------------------------------
 
 n_rows <- length(setting_names)
-n_cols <- 4
+n_cols <- 5
 
 
 final_fig <- do.call(
@@ -325,6 +339,13 @@ final_fig <- do.call(
   )
 )
 
+final_fig <- final_fig %>%
+  layout(
+    margin = list(l = 0, r = 0, t = 10, b = 10),  # control spacing between plots
+    height = n_rows * 250  # adjust height for multiple rows
+  )
+final_fig
+
 # ------------------------------------------------------------------------------
 # Row annotations (left side, centered per row)
 # ------------------------------------------------------------------------------
@@ -338,7 +359,7 @@ row_ys <- seq(
 row_annotations <- lapply(seq_len(n_rows), function(i) {
   list(
     text = setting_annotations[i],
-    x = -0.08,
+    x = -0.06,
     y = row_ys[i],
     xref = "paper",
     yref = "paper",
@@ -346,7 +367,7 @@ row_annotations <- lapply(seq_len(n_rows), function(i) {
     xanchor = "right",
     yanchor = "middle",
     align = "right",
-    font = list(size = 14)
+    font = list(size = 16)
   )
 })
 
@@ -355,11 +376,11 @@ row_annotations <- lapply(seq_len(n_rows), function(i) {
 # ------------------------------------------------------------------------------
 
 col_titles <- c(
-  # "Doomed",
-  "Population",
-  "Naturally infected (ER)",
-  "Naturally infected (CW)",
-  "Naturally infected (ER + CW)"
+  "Population\n ",
+  "Naturally infected\n(ER)",
+  "Naturally infected\n(PI)",
+  "Naturally infected\n(ER + PI)",
+  "All Power\n "
 )
 
 col_xs <- seq(
@@ -372,13 +393,13 @@ col_annotations <- lapply(seq_len(n_cols), function(i) {
   list(
     text = col_titles[i],
     x = col_xs[i],
-    y = 1.04,
+    y = 1,
     xref = "paper",
     yref = "paper",
     showarrow = FALSE,
     xanchor = "center",
     yanchor = "bottom",
-    font = list(size = 16)
+    font = list(size = 18)
   )
 })
 
@@ -399,95 +420,35 @@ final_fig <- final_fig %>%
     ),
     legend = list(
       orientation = "h",
-      x = 1.02,
-      y = 0,
-      xanchor = "left",
+      x = 0.5,
+      y = -0.1,
+      xanchor = "center",
       yanchor = "top",
-      font = list(size = 14),
-      bgcolor = "rgba(255,255,255,0)"
+      font = list(size = 16),
+      bgcolor = "rgba(255,255,255,0)",
+      traceorder = "normal",       # <-- add this
+      itemwidth = 5,              # <-- controls spacing between items
+      tracegroupgap = 0            # <-- collapse group gaps
     ),
     annotations = c(row_annotations, col_annotations),
-    margin = list(l = 260, t = 120)
+    margin = list(l = 240, t = 100, b = 240)  # increase bottom margin to fit 2 rows THIS IS WHAT IS BREAKING MY CONTOURS
   )
 
 final_fig
 
+#final_fig <- plotly_build(final_fig)
+#final_fig$x$layout$margin <- list(l = 200, t = 120, b = 240)
 
-# -------
+# Save without margin
+htmlwidgets::saveWidget(final_fig, here::here("results/contour/figures/contour_VE.html"), selfcontained = TRUE)
 
-final_fig <- do.call(
-  subplot,
-  c(
-    all_rows,
-    list(
-      nrows = length(setting_names),
-      shareX = TRUE,
-      shareY = TRUE,
-      titleX = TRUE,
-      titleY = TRUE
-    )
-  )
-) %>%
-  layout(
-    coloraxis = list(
-      colorscale = my_colorscale,
-      cmin = zmin,
-      cmax = zmax,
-      colorbar = list(
-        title = list(text = "Effect size", side = "top"),
-        tickfont = list(size = 14)
-      )
-    ),
-    legend = list(
-      orientation = "h",
-      x = 1.025,
-      y = 0,
-      
-      xanchor = "left",
-      yanchor = "top",
-      font = list(size = 14),
-      bgcolor = "rgba(255,255,255,0)"
-    ),
-    annotations = list(
-      # list(
-      #   text = "Doomed",
-      #   x = 0.1, y = 1.025, xref = "paper", yref = "paper",
-      #   showarrow = FALSE,
-      #   font = list(size = 16, family = "Arial", color = "black")
-      # ),
-      list(
-        text = "Population",
-        x = 0.1, y = 1.025, xref = "paper", yref = "paper",
-        showarrow = FALSE,
-        font = list(size = 16, family = "Arial", color = "black")
-      ),
-      list(
-        text = "Naturally infected (ER)",
-        x = .35, y = 1.025, xref = "paper", yref = "paper",
-        showarrow = FALSE,
-        font = list(size = 16, family = "Arial", color = "black")
-      ),
-      list(
-        text = "Naturally infected (CW)",
-        x = .7, y = 1.025, xref = "paper", yref = "paper",
-        showarrow = FALSE,
-        font = list(size = 16, family = "Arial", color = "black")
-      ),
-      list(
-        text = "Naturally infected (ER + CW)",
-        x = 1, y = 1.025, xref = "paper", yref = "paper",
-        showarrow = FALSE,
-        font = list(size = 16, family = "Arial", color = "black")
-      )
-    )
-  )
-
-
-final_fig
-
-#plotly::export(final_fig, file = here::here("results/contour/figures/contour_VE.png"))
-
-save_image(final_fig, here::here("results/contour/figures/contour_VE_new.png"), width = 1200, height = 1000)
+# Then take the screenshot with webshot padding instead
+webshot2::webshot(
+  here::here("results/contour/figures/contour_VE.html"),
+  here::here("results/contour/figures/contour_VE.png"),
+  vwidth = 1800, vheight = 900,
+  delay = 2
+)
 
 # orca(final_fig, file = here::here("results/contour/figures/contour_VE.png"), 
 #      format = tools::file_ext(file),
