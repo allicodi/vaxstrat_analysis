@@ -161,8 +161,8 @@ for(fname in files){
     # Difference between bound est & true bound
     result_df$lower_additive_diff <- result_df$additive_effect_lower - result_df$additive_effect_lower_truth
     result_df$upper_additive_diff <- result_df$additive_effect_upper - result_df$additive_effect_upper_truth
-    result_df$lower_mult_diff <- result_df$mult_effect_lower - result_df$mult_effect_lower_truth
-    result_df$upper_mult_diff <- result_df$mult_effect_upper - result_df$mult_effect_upper_truth
+    result_df$lower_mult_diff <- log(result_df$mult_effect_lower) - log(result_df$mult_effect_lower_truth)
+    result_df$upper_mult_diff <- log(result_df$mult_effect_upper) - log(result_df$mult_effect_upper_truth)
     
     # Width of bounds
     result_df$bound_width_additive <- result_df$additive_effect_upper - result_df$additive_effect_lower

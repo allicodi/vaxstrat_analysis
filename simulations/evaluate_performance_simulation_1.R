@@ -132,7 +132,7 @@ for(fname in files){
     )
     
     result_df$additive_diff <- result_df$additive_estimate - result_df$additive_truth
-    result_df$mult_diff <- result_df$mult_estimate - result_df$mult_truth
+    result_df$mult_diff <- log(result_df$mult_estimate) - log(result_df$mult_truth)
     
     result_df$psi_1_diff <- result_df$psi_1 - result_df$psi_1_truth
     result_df$psi_0_diff <- result_df$psi_0 - result_df$psi_0_truth
@@ -166,7 +166,7 @@ summary_df <- all_result_df %>%
     coverage_additive = mean(additive_coverage, na.rm = TRUE),
     
     bias_mult = mean(mult_diff, na.rm = TRUE),
-    var_mult = var(mult_estimate, na.rm = TRUE),
+    var_mult = var(log(mult_estimate), na.rm = TRUE),
     mse_mult = mean(mult_diff^2, na.rm = TRUE),
     coverage_mult = mean(mult_coverage, na.rm = TRUE),
     
