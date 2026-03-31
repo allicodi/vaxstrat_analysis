@@ -2,7 +2,7 @@
 # Script to make table with truth from simulations for supplement
 # -------------------------------------------------------------------
 
-here::i_am("R/make_truth_table.R")
+here::i_am("R/make_truth_table_sim_1.R")
 
 library(dplyr)
 library(knitr)
