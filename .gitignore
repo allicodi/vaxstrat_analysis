@@ -1,8 +1,7 @@
-simulations/provide_data_gen_for_susan.R
-real_data_analysis/provide_data
-real_data_analysis/results
 simulations/sim_data
 simulations/results
 simulations/truth
+real_data_analysis/provide_data
+real_data_analysis/results
 .Rhistory
 .DS_Store

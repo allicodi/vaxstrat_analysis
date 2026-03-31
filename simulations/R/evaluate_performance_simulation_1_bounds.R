@@ -7,12 +7,12 @@ options(echo = TRUE)
 
 .libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
 
-here::i_am("evaluate_performance_simulation_1_bounds.R")
+here::i_am("R/evaluate_performance_simulation_1_bounds.R")
 
 source(here::here("simulate_data.R"))
 source(here::here("get_truth.R"))
 
-library(vegrowth)
+library(vaxstrat)
 library(dplyr)
 
 # Path to projects folder where results will be saved

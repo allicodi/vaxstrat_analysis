@@ -8,8 +8,8 @@ here::i_am("real_data_analysis/sensitivity_figure.R")
 
 #results <- readRDS(here::here("real_data_analysis/results/results_fewer_cov_same_lib.Rds"))
 #results <- readRDS(here::here("real_data_analysis/results/sensitivity_analysis_results.Rds"))
-results <- readRDS(here::here("real_data_analysis/results/main_results_ML.Rds"))
-
+#results <- readRDS(here::here("real_data_analysis/results/main_results_ML.Rds"))
+results <- readRDS(here::here("real_data_analysis/results/main_results_ML_vaxstrat.Rds"))
 
 
 sens_res <- results$nat_inf$sens
@@ -48,12 +48,20 @@ sens_plot <- ggplot(sens_res_df, aes(x = epsilon, y = additive_effect)) +
     y = expression(psi[1*","*PI*","*epsilon*","*n] - psi[0*","*n] ~ "(95\u0025 CI)") 
   ) +
   theme_minimal(base_size = 16)  +
+  # scale_x_log10(
+  #   breaks = pretty(sens_res_df$epsilon),  # or use c(0.1, 0.2, 0.5, 1, 2, 5, 10) for custom ticks
+  #   labels = scales::label_number()          # or scales::label_math() if you want expressions
+  # ) +
   scale_x_log10(
-    breaks = pretty(sens_res_df$epsilon),  # or use c(0.1, 0.2, 0.5, 1, 2, 5, 10) for custom ticks
-    labels = scales::label_number()          # or scales::label_math() if you want expressions
-  )
+    breaks = c(0.55, 1, 1.5, 2),   # choose epsilon values to label
+    labels = scales::label_number()
+  ) +
+  scale_y_continuous(
+    limits = c(-0.4, 0.2),       # force y-axis range
+    breaks = seq(-0.4, 0.2, 0.1) # ticks every 0.1 (you can adjust), labels shown
+  ) 
 
-ggsave(here::here("real_data_analysis/results/sens_plot_provide.jpg"), sens_plot, width = 12, height = 8, dpi = 300)
+ggsave(here::here("real_data_analysis/results/sens_plot_provide_vaxstrat.jpg"), sens_plot, width = 12, height = 8, dpi = 300)
 
 # delta method stuff
 t <- sens_res_df$psi_1 - sens_res_df$psi_0

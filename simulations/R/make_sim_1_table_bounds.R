@@ -2,7 +2,7 @@
 # Make latex table for simulation 1 results
 # ---------------------------------------------------
 
-here::i_am("make_sim_1_table_bounds.R")
+here::i_am("R/make_sim_1_table_bounds.R")
 
 library(dplyr)
 library(knitr)

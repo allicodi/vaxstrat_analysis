@@ -2,11 +2,11 @@
 # Script to get truth for contour plots (run locally)
 # ------------------------------------------------------
 
-here::i_am("get_truth_contour.R")
+here::i_am("R/get_truth_contour.R")
 
-source(here::here("simulate_data.R"))
+source(here::here("R/simulate_data.R"))
 
-devtools::load_all("../../shigella_projects/packages/vegrowth/")
+devtools::load_all("../../../shigella_projects/packages/vaxstrat/")
 
 library(SuperLearner)
 library(future.apply)

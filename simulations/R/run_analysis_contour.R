@@ -6,17 +6,17 @@ options(echo = TRUE)
 # Path to installed packages on cluster
 .libPaths(c("/apps/R/4.4.0/lib64/R/site/library","/apps/R/4.4.0/lib64/R/library", "~/Rlibs_ve_trial"))
 
-here::i_am("run_analysis_contour.R")
+here::i_am("R/run_analysis_contour.R")
 
-source(here::here("simulate_data.R"))
-source(here::here("SL.wrappers.R"))
+source(here::here("R/simulate_data.R"))
+source(here::here("R/SL.wrappers.R"))
 
 #devtools::load_all("../../shigella_projects/packages/vegrowth/")
 
 #library(future)
 library(future.apply)
 library(SuperLearner)
-library(vegrowth)
+library(vaxstrat)
 
 # For initial debugging scratch file
 options(echo = TRUE)
@@ -58,7 +58,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, sim_type,
   
   library(SuperLearner)
   library(earth)
-  source("/home/acodi/vegrowth_analysis/simulations/SL.wrappers.R")
+  source("/home/acodi/vegrowth_analysis/simulations/R/SL.wrappers.R")
   
   if(sim_type == "generic"){
     big_data <- simulate_data_contour(seed = grid$seed[i],
@@ -69,7 +69,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, sim_type,
                                       doomed_epsilon = grid$doomed_epsilon[i],
                                       n = 2000)
     
-    results <- vegrowth::vegrowth(data = big_data, 
+    results <- vaxstrat::vaxstrat(data = big_data, 
                                   Y_name = "Y",
                                   Z_name = "Z",
                                   S_name = "S",
@@ -103,7 +103,7 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid, sim_type,
                                       protected_delta = grid$protected_delta[i],
                                       n = 700)
     
-    results <- vegrowth::vegrowth(data = big_data, 
+    results <- vaxstrat::vaxstrat(data = big_data, 
                                   Y_name = "any_abx_wk52",
                                   Z_name = "rotaarm",
                                   S_name = "rotaepi",

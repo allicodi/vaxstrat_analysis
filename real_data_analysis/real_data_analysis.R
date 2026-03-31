@@ -10,7 +10,8 @@ library(kableExtra)
 
 here::i_am("real_data_analysis/real_data_analysis.R")
 
-devtools::load_all("../shigella_projects/packages/vegrowth/")
+# devtools::load_all("../shigella_projects/packages/vegrowth/")
+library(vaxstrat)
 
 data <- readRDS("real_data_analysis/provide_data/per_protocol_data.Rds")
 
@@ -48,7 +49,7 @@ if(any(sapply(covariate_data, is.factor) == TRUE)){
 }
 
 # main results
-results <- vegrowth(data = one_hot_data, 
+results <- vaxstrat(data = one_hot_data, 
                    Y_name = "any_abx_wk52",
                    Z_name = "rotaarm",
                    S_name = "rotaepi",
@@ -70,9 +71,9 @@ results <- vegrowth(data = one_hot_data,
                    family = "binomial",
                    return_models = FALSE,
                    effect_dir = "negative",
-                   epsilon = exp(seq(log(0.76), log(3), by = -log(0.76) / 10)))
+                   epsilon = exp(seq(log(0.55), log(2.2), by = -log(0.55) / 10)))
 
-saveRDS(results, here::here("real_data_analysis/results/main_results_ML.Rds"))
+saveRDS(results, here::here("real_data_analysis/results/main_results_ML_vaxstrat.Rds"))
 
 ### Covariate adjusted bounds (do not use models)
 

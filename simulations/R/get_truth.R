@@ -2,7 +2,7 @@
 # Script to get truth for given simulation settings
 # -----------------------------------------------------------------------------
 
-here::i_am("get_truth.R")
+here::i_am("R/get_truth.R")
 
 get_truth_provide <- function(config, n = 1e7, seed = 12345){
   
