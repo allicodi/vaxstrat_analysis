@@ -23,7 +23,7 @@ This repository contains code for simulations and real data analysis accompanyin
 
 ### 6.1 Asymptotic Properties of Estimators
 
-**Structure:**
+**Files:**
 - `run_simulation_1.sh` - Bash script to submit simulations for one-step estimators
 - `config_sim_1.yml` - Configuration file containing settings used in simulation 1
 - `run_simulation_1_bounds.sh` - Bash script to submit simulations for bounds
@@ -35,7 +35,7 @@ This repository contains code for simulations and real data analysis accompanyin
 
 ### 6.2 Comparing Power of Estimands in Realistic Setting
 
-**Structure:**
+**Files:**
 - `run_simulation_contour.sh` - Bash script to submit simulations under PROVIDE-like data generating process
 - `R/` folder contains scripts for running PROVIDE-like analysis and generating contour plot to compare power across settings (file names correspond to "contour")
 
@@ -48,7 +48,7 @@ Analysis of data from the PROVIDE study
 
 ### Primary Analysis
 
-**Structure:**
+**Files:**
 - `real_data_analysis.R` - Rscript containing main analysis, covariate adjusted bounds, and table generation code
 
 **Outputs:**
@@ -57,7 +57,7 @@ Analysis of data from the PROVIDE study
 
 ### Sensitivity Analysis
 
-**Structure:**
+**Files:**
 - `sensitivity_analysis.R` - Sensitivity analysis script to read main results and make sensitivity analysis figure
 
 **Outputs:**
