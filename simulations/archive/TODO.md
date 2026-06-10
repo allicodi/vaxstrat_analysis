@@ -14,8 +14,15 @@
 		- I submitted a PR with a new function that simulates data under a different DGP with various step functions and weird interactions. The structure is otherwise the same as previous functions.
 		- I assume from a human-time-standpoint, it is easier to just keep the structure exactly the same as the generic simulation and go ahead and do it for all the estimators.
 		- ONLY consider the PI and ER satisfied scenario. No need to violate those things. Set `doomed_inflation = 0.1` (or update text in Supp so that it's 0).
-		- We want to compare a cross-fitted estimator vs. non-cross fitted. So the output is like Table S3, except it's 
-		
+		- For the ML, you could just do random forest. Or if everything runs through super learner, then do SL.glm and SL.ranger or something. 
+		- Just set cross-fitting folds to 3 or 5 or something small-ish so it runs quickly
+		- Sample sizes 500 and 4000 are probably fine to start with
+		- Add results to Supplement I.3. I have added some text there describing the DGP and left placeholders for true values (don't need a table since just one scenario)
+		- Random questions: 
+			- is [this line](https://github.com/allicodi/vaxstrat_analysis/blob/1749f15db20555ef023f925892bd5b4416f36055/simulations/R/run_simulation_1.R#L74) needed? Aren't we just reporting closed form inference?
+			- `simulate_data_contour` is deprecated right? should we remove from repo?
+		- We want to compare a cross-fitted estimator vs. non-cross fitted. So the output is like Table S3, except formatted as:
+
 | assumptions satisfied | cross_fit | sample_size | bias | etc... |
 |----------------------|----------|------------:|-----:|--------|
 | PI                   | yes      | 400         | .... | ....   |
@@ -31,14 +38,7 @@
 | both                 | yes      | 5000        | .... | ....   |
 | both                 | no       | 5000        | .... | ....   |
 
-		- For the ML, you could just do random forest. Or if everything runs through super learner, then do SL.glm and SL.ranger or something. 
-		- Just set cross-fitting folds to 3 or 5 or something small-ish so it runs quickly
-		- Sample sizes 500 and 4000 are probably fine to start with
-		- Add results to Supplement I.3. I have added some text there describing the DGP and left placeholders for true values (don't need a table since just one scenario)
-	- Random questions: 
-		- is [this line](https://github.com/allicodi/vaxstrat_analysis/blob/1749f15db20555ef023f925892bd5b4416f36055/simulations/R/run_simulation_1.R#L74) needed? Aren't we just reporting closed form inference?
-		- `simulate_data_contour` is deprecated right? should we remove from repo?
-
+		
 - Real data analysis
 	- Covariate-adjusted bounds need to be re-run and semiparametric estimator needs to be re-run.
 	- Update text and mark changes
