@@ -380,8 +380,130 @@ simulate_data_generic <- function(seed = 12345,
   
   # Vaccine (Z) & Infection (S) & Outcome (Y) ----------------------------------------
   
+  # P(Z | X) ~ Bernoulli(1/2)
+  p_Z__X <- 1/2
+  data$Z <- rbinom(n, 1, p_Z__X )
+  data$S <- NA
+  data$Y <- NA
+  
+  # Doomed, Z = 1:
+  is_doomed <- data$stratum == "Doomed"
+  data$S0[is_doomed] <- 1
+  data$S1[is_doomed] <- 1
+  data$Y1[is_doomed] <- rbinom(sum(is_doomed), 1, data$p_Y1__doomed[is_doomed])
+  data$Y0[is_doomed] <- rbinom(sum(is_doomed), 1, data$p_Y0__doomed[is_doomed])
+  
+  data$S[is_doomed & data$Z == 1] <- data$S1[is_doomed & data$Z == 1]
+  data$S[is_doomed & data$Z == 0] <- data$S0[is_doomed & data$Z == 0]
+  data$Y[is_doomed & data$Z == 1] <- data$Y1[is_doomed & data$Z == 1]
+  data$Y[is_doomed & data$Z == 0] <- data$Y0[is_doomed & data$Z == 0]
+  
+  # Immune: 
+  is_immune <- data$stratum == "Immune"
+  data$S0[is_immune] <- 0
+  data$S1[is_immune] <- 0
+  # data$Y1[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y01__immune[is_immune])
+  # data$Y0[is_immune] <- data$Y1[is_immune]
+  data$Y1[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y1__immune[is_immune])
+  data$Y0[is_immune] <- rbinom(sum(is_immune), 1, data$p_Y0__immune[is_immune])
+  
+  data$S[is_immune & data$Z == 1] <- data$S1[is_immune & data$Z == 1]
+  data$S[is_immune & data$Z == 0] <- data$S0[is_immune & data$Z == 0]
+  data$Y[is_immune & data$Z == 1] <- data$Y1[is_immune & data$Z == 1]
+  data$Y[is_immune & data$Z == 0] <- data$Y0[is_immune & data$Z == 0]
+  
+  # Protected, Z=1:
+  is_protected <- data$stratum == "Protected" 
+  data$S0[is_protected] <- 1
+  data$S1[is_protected] <- 0
+  data$Y1[is_protected] <- rbinom(sum(is_protected), 1, data$p_Y1__protect[is_protected])
+  data$Y0[is_protected] <- rbinom(sum(is_protected), 1, data$p_Y0__protect[is_protected])
+  
+  data$S[is_protected & data$Z == 1] <- data$S1[is_protected & data$Z == 1]
+  data$S[is_protected & data$Z == 0] <- data$S0[is_protected & data$Z == 0]
+  data$Y[is_protected & data$Z == 1] <- data$Y1[is_protected & data$Z == 1]
+  data$Y[is_protected & data$Z == 0] <- data$Y0[is_protected & data$Z == 0]
+  
+  return(data)
+   
+}
+
+
+
+# Function to simulate data for cross-fitting simulation
+simulate_data_cross_fit <- function(seed = 12345,
+                                  effect_protect = TRUE,
+                                  doomed_inflation = 0,
+                                  doomed_epsilon = 1,
+                                  protected_epsilon = 1,
+                                  immune_epsilon = 1,
+                                  n = 1e5){
+  set.seed(seed)
+  data <- data.frame(id = 1:n)
+  
+  # Covariates -----------------------------------------------------------------
+  
+  data$X1 <- rbinom(n, 1, 0.5)
+  data$X2 <- rbinom(n, 1, 0.5)
+  data$X3 <- rbinom(n, 1, 0.5)
+  data$X4 <- rbinom(n, 1, 0.5)
+  data$X5 <- rbinom(n, 1, 0.5)
+  data$X6 <- runif(n, 0, 1)
+  data$X7 <- runif(n, 0, 1)
+  data$X8 <- runif(n, 0, 1)
+  data$X9 <- runif(n, 0, 1)
+  data$X10 <- runif(n, 0, 1)
+  
+  # Principal Strata ------------------------------------------------------------
+  
+  data$p_doomed__x <- with(data, plogis(
+    -1 + 0.25*X1 - 0.25*X1*X2*X3 + 0.5*(X6 > 0.25) - 0.5*(X7 > 0.1 & X8 < 0.9)
+  ))
+  data$p_immune__x <- with(data, plogis(
+    -1.5 + 0.5*X3 - 0.5*X2*X3 + 0.5*(X7 < 0.75) - 0.5*X2*(X5 < 0.5)
+  ))
+  data$p_protected__x <- 1 - data$p_doomed__x - data$p_immune__x
+  
+  # Sample the strata
+  probs <- cbind(data$p_doomed__x, data$p_immune__x, data$p_protected__x)
+  strata <- c("Doomed", "Immune", "Protected")
+  data$stratum <- apply(probs, 1, function(p) sample(strata, size = 1, prob = p))
+  
+  #round(prop.table(table(data$stratum)), 3)
+  
+  # Outcome Probabilities --------------------------------------------------------
+
+  # P(Y(0) = 1 | Doomed)
+  data$p_Y0__doomed <-  with(data, 
+    plogis(-1 + 0.5*X1*X2 - X2*(X6 < 0.25) + 0.5*(X7 > 0.5))
+  )
+  
+  # P(Y(0) = 1 | Protect)
+  data$p_Y0__protect <- data$p_Y0__doomed * doomed_epsilon
+  
+  # P(Y(1) = 1 | Doomed)
+  data$p_Y1__doomed <- plogis(qlogis(data$p_Y0__doomed) + doomed_inflation)
+
+  # flag to make protected effect = 0
+  if(effect_protect){
+    data$p_Y0__immune <- with(data, 
+      plogis(-0.5 + 0.5*X2*X3 - 0.5*X1*(X7 > 0.75) + 0.25*X1)
+    )
+    data$p_Y1__immune <- data$p_Y0__immune * immune_epsilon
+    
+  } else{
+    data$p_Y0__immune <- data$p_Y0__protect
+    data$p_Y1__immune <- data$p_Y0__immune * immune_epsilon
+  }
+  
+  data$p_Y1__protect <- data$p_Y1__immune * protected_epsilon
+  
+  # Vaccine (Z) & Infection (S) & Outcome (Y) ----------------------------------------
+  
   # P(Z | X) ~ Bernoulli(plogis(X1 + X2 + X3))
-  p_Z__X <- plogis(-0.14 - 0.5*data$X1 + 1*data$X1*data$X2 - 1.2*data$X3)
+  p_Z__X <- with(data, 
+    plogis(-0.25 - 0.25*X2*X4 + 0.5*(X6 > 0.5)*X2)
+  )
   
   data$Z <- rbinom(n, 1, p_Z__X )
   data$S <- NA
