@@ -74,7 +74,6 @@ results <- future.apply::future_lapply(1:nrow(grid), function(i, grid){
                       method = config$method,
                       exclusion_restriction = c(TRUE, FALSE), # do for both exclusion restriction scenarios
                       cross_world = c(TRUE, FALSE),           # do for cross-world both true and false
-                      n_boot = 1000,
                       seed = seed,
                       return_se = TRUE,
                       ml = FALSE,
