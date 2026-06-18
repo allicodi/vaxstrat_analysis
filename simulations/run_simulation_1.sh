@@ -24,4 +24,4 @@ sbatch --array=1-$NSEEDS \
   --job-name=vegrowth_sim \
   --output=/projects/dbenkes/allison/vegrowth_analysis/scratch/${SETTING}_%A_%a.out \
   --export=SETTING=$SETTING,NSEEDS=$NSEEDS \
-  --wrap "/apps/R/4.4.0/bin/Rscript run_simulation_1.R"
+  --wrap "/apps/R/4.4.0/bin/Rscript R/run_simulation_1.R"
