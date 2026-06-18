@@ -10,8 +10,8 @@ library(kableExtra)
 
 here::i_am("real_data_analysis/real_data_analysis.R")
 
-# devtools::load_all("../shigella_projects/packages/vaxstrat/")
-library(vaxstrat)
+devtools::load_all("../shigella_projects/packages/vaxstrat/")
+#library(vaxstrat)
 
 data <- readRDS("real_data_analysis/provide_data/per_protocol_data.Rds")
 
@@ -100,8 +100,6 @@ results_gender_bound <- vaxstrat(data = data,
                                   family = "binomial",
                                   return_models = FALSE,
                                   effect_dir = "negative")
-# slightly wider bound
-# 0.087 (0.022, 0.165)
 
 # covariate adjusted bounds: enr haz (binary)
 data$enr_haz_bin <- ifelse(data$enr_haz < -1, 1, 0)
@@ -127,7 +125,6 @@ results_enr_haz_bound <- vaxstrat(data = data,
                                  return_models = FALSE,
                                  effect_dir = "negative")
 
-# 0.082 (0.014, 0.160)
 
 data$num_hh_sleep_bin <- ifelse(data$num_hh_sleep < 5, 1, 0)
 results_num_hh_sleep_bound <- vaxstrat(data = data, 
@@ -151,7 +148,6 @@ results_num_hh_sleep_bound <- vaxstrat(data = data,
                                   return_models = FALSE,
                                   effect_dir = "negative")
 
-# 0.084 (0.017, 0.161)
 
 # gender x enr_haz
 data$I_gender_x_enr_haz <- data$gender * data$enr_haz_bin 
@@ -244,7 +240,6 @@ results_I_all_bound <- vaxstrat(data = data,
                                  return_models = FALSE,
                                  effect_dir = "negative")
 
-# 0.086 (0.019, 0.162)
 
 # ------------------------------------------------------------------------
 
@@ -403,7 +398,7 @@ kable(
 # -----------------------------------------------------------------------------
 # Helper: format bootstrap percentile CI for a given stratum/result object
 # -----------------------------------------------------------------------------
-fmt_bound_boot <- function(res_obj, scale = c("additive", "mult"), bound = c("lower", "upper"), digits = 2, cov_adj = FALSE) {
+fmt_bound_boot <- function(res_obj, scale = c("additive", "mult"), bound = c("lower", "upper"), digits = 3, cov_adj = FALSE) {
   scale <- match.arg(scale)
   bound <- match.arg(bound)
   
@@ -514,7 +509,7 @@ cov_adj_list <- list(
   "All interactions"        = results_I_all_bound
 )
 
-tables_list <- build_bounds_table_for_latex(results, cov_adj_list, digits = 2)
+tables_list <- build_bounds_table_for_latex(results, cov_adj_list, digits = 3)
 
 # Bind them (preserve group labels)
 combined_bounds <- bind_rows(tables_list, .id = "Method")
