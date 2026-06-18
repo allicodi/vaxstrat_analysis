@@ -12,9 +12,10 @@ here::i_am("R/run_simulation_1_bounds.R")
 
 source(here::here("R/simulate_data.R"))
 
-#devtools::load_all("~/Documents/shigella_projects/packages/vaxstrat")
+# dev branch on cluster
+devtools::load_all("~/vaxstrat")
 
-library(vaxstrat)
+# library(vaxstrat)
 library(future.apply)
 library(SuperLearner)
 
