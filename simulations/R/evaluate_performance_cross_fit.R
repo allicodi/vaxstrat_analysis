@@ -29,7 +29,7 @@ config <- cfg[[setting]]
 result_dir <- file.path(project_dir, setting)
 
 # Get true effects
-truth_file <- here::here(paste0("truth/", setting, "_truth.Rds"))
+truth_file <- here::here(paste0("truth/cross_fit/", setting, "_truth.Rds"))
 if(!file.exists(truth_file)){
   truth <- get_truth_cross_fit(config)
   saveRDS(truth, truth_file)
