@@ -9,8 +9,8 @@ options(echo = TRUE)
 
 here::i_am("R/evaluate_performance_simulation_1_bounds.R")
 
-source(here::here("simulate_data.R"))
-source(here::here("get_truth.R"))
+source(here::here("R/simulate_data.R"))
+source(here::here("R/get_truth.R"))
 
 devtools::load_all("~/vaxstrat")
 #library(vaxstrat)
