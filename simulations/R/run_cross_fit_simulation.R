@@ -23,14 +23,6 @@ library(SuperLearner)
 # For initial debugging scratch file
 options(echo = TRUE)
 
-# this was for protect, probably can make smaller
-options(future.globals.maxSize = 5 * 1024^3) # 5 GB
-options(future.globals.onReference = "ignore")
-
-# ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "1"))
-# print(ncores)
-# plan(multisession, workers = ncores)
-
 project_dir <- "/projects/dbenkes/allison/vegrowth_analysis/results/cross_fit/"
 seed <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 setting <- Sys.getenv("SETTING")
@@ -66,7 +58,7 @@ results <- lapply(1:nrow(grid), function(i, grid){
                       Y_name = "Y",
                       Z_name = "Z",
                       S_name = "S",
-                      X_name = c("X1", "X2", "X3"),
+                      X_name = c("X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10"),
                       estimand = config$estimand,
                       method = config$method,
                       exclusion_restriction = c(TRUE, FALSE), # do for both exclusion restriction scenarios
@@ -90,4 +82,44 @@ results <- lapply(1:nrow(grid), function(i, grid){
   
 }, grid = grid)
 
-saveRDS(results, paste0(project_dir, setting, "/", setting, "_overall_seed_", seed, ".Rds"))
+saveRDS(results, paste0(project_dir, setting, "/", setting, "_cross_fit_seed_", seed, ".Rds"))
+
+# Repeat for non-cross fit version
+results_og <- lapply(1:nrow(grid), function(i, grid){
+  
+  data <- simulate_data_cross_fit(seed = grid$seed[i],
+                                  effect_protect = grid$effect_protect[i],
+                                  doomed_inflation = grid$doomed_inflation[i],
+                                  protected_epsilon = grid$protected_epsilon[i], 
+                                  doomed_epsilon = grid$doomed_epsilon[i],
+                                  immune_epsilon = grid$immune_epsilon[i],
+                                  n = grid$n_sample_size[i])
+  
+  results <- vaxstrat(data = data, 
+                      Y_name = "Y",
+                      Z_name = "Z",
+                      S_name = "S",
+                      X_name = c("X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10"),
+                      estimand = config$estimand,
+                      method = config$method,
+                      exclusion_restriction = c(TRUE, FALSE), # do for both exclusion restriction scenarios
+                      cross_world = c(TRUE, FALSE),           # do for cross-world both true and false
+                      seed = seed,
+                      return_se = TRUE,
+                      ml = TRUE,
+                      Y_Z_X_library = config$Y_Z_X_library,
+                      Y_X_library =  config$Y_X_library, 
+                      S_X_library = config$S_X_library,
+                      S_Z_X_library = config$S_Z_X_library, 
+                      Z_X_library = config$Z_X_library,
+                      family = "binomial",
+                      return_models = FALSE,
+                      effect_dir = "positive",
+                      epsilon = grid$protected_epsilon[i], 
+                      cross_fit = FALSE)
+  return(results)
+  
+}, grid = grid)
+
+saveRDS(results_og, paste0(project_dir, setting, "/", setting, "_single_fit_seed_", seed, ".Rds"))
+
