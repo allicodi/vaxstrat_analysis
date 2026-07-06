@@ -11,8 +11,8 @@
 		- ~~Update text as needed. Mark changes.~~
 			- Updated all.
 	- "Comparing power of estimands in realistic setting" simulation technically doesn't have to be re-run since both ER and PI assumptions hold. Thus, the semiparametric estimator is technically "correct" so I don't expect results will change much. But if not too much trouble, probably worth re-running in case we get slight improvement.
-		- If you re-run, update text as needed if results change.
-			- Planning to rerun
+		- ~~If you re-run, update text as needed if results change.~~
+			- Reran and updated figure
 	- Need a new simulation to look at cross-fitted estimators. 
 		- I submitted a PR with a new function that simulates data under a different DGP with various step functions and weird interactions. The structure is otherwise the same as previous functions.
 		- I assume from a human-time-standpoint, it is easier to just keep the structure exactly the same as the generic simulation and go ahead and do it for all the estimators.
